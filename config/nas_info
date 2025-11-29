@@ -1,7 +1,0 @@
-/dev/mapper/nvme0n1p3_crypt /               btrfs   defaults,subvol=@rootfs 0       0
-# /boot was on /dev/nvme0n1p2 during installation
-UUID=0d6bf239-9968-4086-8d2a-307423147ebd /boot           ext4    defaults        0       2
-# /boot/efi was on /dev/nvme0n1p1 during installation
-UUID=1250-E207  /boot/efi       vfat    umask=0077      0       1
-#Montar NAS MY CLOUD
-//192.168.1.144/zwd_cloud /mnt/NAS cifs gid=gherz,forcegid,rw,file_mode=0775,dir_mode=0775,credentials=/root/.smbcredentials,vers=2.0,nofail,_netdev,x-systemd.automount 0 0
