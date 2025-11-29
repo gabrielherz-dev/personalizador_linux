@@ -1,9 +1,0 @@
-[$Version]
-update_info=spectacle_clipboard.upd:clipboard-settings-change,spectacle_rememberregion.upd:spectacle-migrate-rememberregion
-
-[GuiConfig]
-captureMode=2
-window-position=0,0
-
-[Save]
-lastSaveLocation=file:///home/gherz/Pictures/Screenshot_20250625_113841.png

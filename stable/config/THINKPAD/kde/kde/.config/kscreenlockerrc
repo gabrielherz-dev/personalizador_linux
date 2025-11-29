@@ -1,5 +1,0 @@
-[Greeter]
-WallpaperPlugin=org.kde.image
-
-[Greeter][Wallpaper][org.kde.image]
-Image=/home/gherz/.local/share/wallpapers/wallpaper_debian_principal.jpg

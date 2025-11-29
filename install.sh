@@ -8,13 +8,13 @@
 readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Importar clases y scripts  debian stable
 source "$RUTA_ACTUAL/config/constantes.sh"
-source "$RUTA_ACTUAL/testing/GnomeApp.class.sh"
+source "$RUTA_ACTUAL/core/GnomeApp.class.sh"
 # Importar clases y scripts  debian testing que en su mayoría sirven para stable
-source "$RUTA_ACTUAL/testing/App.class.sh"
-source "$RUTA_ACTUAL/testing/I3wmApp.class.sh"
-source "$RUTA_ACTUAL/testing/FlatApp.class.sh"
-source "$RUTA_ACTUAL/testing/LightdmApp.class.sh"
-source "$RUTA_ACTUAL/testing/KDEApp.class.sh"
+source "$RUTA_ACTUAL/core/App.class.sh"
+source "$RUTA_ACTUAL/core/I3wmApp.class.sh"
+source "$RUTA_ACTUAL/core/FlatApp.class.sh"
+source "$RUTA_ACTUAL/core/LightdmApp.class.sh"
+source "$RUTA_ACTUAL/core/KDEApp.class.sh"
 
 # Importar clases y scripts  debian stable
 source "$RUTA_ACTUAL/stable/KDESApp.class.sh"
@@ -39,12 +39,11 @@ fi
 
 # Permitir que el usuario elija entre stable o testing
 DEBIAN_BRANCH=$(dialog --clear \
-  --backtitle "Selector de personalización de Debian" \
+  --backtitle "Selector de personalización de UBUNTU" \
   --title "¿Qué versión de personalización quieres usar?" \
   --menu "Selecciona tu versión para personalizar las opciones de instalación:" \
   15 50 2 \
-  stable "Versión STABLE" \
-  testing "Versión testing y STABLE" \
+  stable "Versión LTS Server" \
   3>&1 1>&2 2>&3)
 
 # Cancelado o error
@@ -56,11 +55,11 @@ fi
 
 # Elegir Tema
 THEME_SELECTED=$(dialog --clear \
-  --backtitle "Selector de personalización de Debian" \
+  --backtitle "Selector de personalización de UBUNTU" \
   --title "¿Cuál tema deseas usar?" \
   --menu "Selecciona el tema :" \
   15 50 2 \
-  DEBIAN "DEBIAN" \
+  DEBIAN "UBUNTU" \
   THINKPAD "THINKPAD" \
   3>&1 1>&2 2>&3)
 
@@ -68,13 +67,9 @@ THEME_SELECTED=$(dialog --clear \
 if [[ "$DEBIAN_BRANCH" == "stable" ]]; then
   OPTIONS=(
     1 "Instalar POP-SHELL para GNOME (ejecutar en sesión de GNOME" off
-    2 "Instalar Tema KDE (luego de iniciar sesión)" off
-    3 "Instalar KDE" off
     4 "Instalar LazzyVim" off
     5 "Instalar RANGER" off
     6 "Instalar Wezterm" off
-    7 "Instalar XFCE4 complementos" off
-    8 "Instalar XFCE4" on
     9 "Instalar Lanzador Albert" off
   )
 else
@@ -88,16 +83,12 @@ else
   apt upgrade
   OPTIONS=(
     1 "Instalar APP" on
-    2 "Instalar i3wm" off
     3 "Instalar GRUB" on
     4 "Instalar Ahorro de batería" off
-    5 "Instalar LightDM" off
     6 "Instalar FLATPAK" on
     7 "Crear Subvolumenes" off
     8 "Instalar perfiles AppArmour" off
     9 "Instalar GNOME" off
-    10 "Instalar KDE" on
-    11 "Instalar Tema KDE (luego de iniciar sesión)" off
     12 "Instalar ULAUNCHER (Debian 13)" off
     13 "Instalar tema ULAUNCHER (Debian 13)" off
   )
