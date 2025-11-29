@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+ <head>
+  <text/>
+ </head>
+ <body>
+  <outline isOpen="false" text="KDE" id="2047022372">
+   <outline version="RSS" htmlUrl="" text="KDE Dot News" useCustomFetchInterval="false" type="rss" title="KDE Dot News" xmlUrl="https://dot.kde.org/rss.xml" maxArticleAge="0" description="" maxArticleNumber="0" comment="" faviconUrl="file:///home/gherz/.cache/favicons/dot.kde.org.png" archiveMode="globalDefault" copyright="" fetchInterval="0" id="1259017333"/>
+   <outline version="RSS" htmlUrl="https://www.linux.com" text="Linux.com" useCustomFetchInterval="false" type="rss" title="Linux.com" xmlUrl="https://www.linux.com/feed/" maxArticleAge="0" description="News For Open Source Professionals" maxArticleNumber="0" comment="" faviconUrl="file:///home/gherz/.cache/favicons/www.linux.com_wp-includes_images_w-logo-blue-white-bg.png" archiveMode="globalDefault" copyright="" fetchInterval="0" id="1367875895"/>
+   <outline title="Planet KDE" logoUrl="https://planet.kde.org/img/planet.png" faviconHeight="0" xmlUrl="https://planet.kde.org/global/atom.xml" id="1235037122" text="Planet KDE" faviconUrl="file:///home/gherz/.cache/favicons/planet.kde.org.png" faviconWidth="0" fetchInterval="0" description="" htmlUrl="https://planet.kde.org/" maxArticleNumber="0" logoHeight="0" type="rss" maxArticleAge="0" version="RSS" archiveMode="globalDefault" comment="" copyright="" useCustomFetchInterval="false" logoWidth="0"/>
+   <outline title="KDE Apps" logoUrl="https://store.kde.org/stores/media/store_kde/logo.png" xmlUrl="https://store.kde.org/content.rdf" id="2267718664" text="KDE Apps" faviconUrl="file:///home/gherz/.cache/favicons/store.kde.org.png" fetchInterval="0" description="" htmlUrl="" maxArticleNumber="0" logoHeight="0" type="rss" maxArticleAge="0" version="RSS" archiveMode="globalDefault" comment="" copyright="All rights reserved. All trademarks are copyright by their respective owners. All contributors are responsible for their uploads." useCustomFetchInterval="false" logoWidth="0"/>
+   <outline isOpen="false" text="Fuentes españolas" id="2600110497">
+    <outline title="Planeta KDE España" logoUrl="https://planet.kde.org/img/planet.png" xmlUrl="https://planet.kde-espana.org/atom.xml" id="1597874834" text="Planeta KDE España" fetchInterval="0" description="" htmlUrl="https://planet.kde.org/es/" maxArticleNumber="0" type="rss" logoHeight="0" maxArticleAge="0" version="RSS" archiveMode="globalDefault" comment="" copyright="" useCustomFetchInterval="false" logoWidth="0"/>
+   </outline>
+  </outline>
+  <outline isOpen="false" text="Debian" id="688829429">
+   <outline version="RSS" htmlUrl="https://planet.debian.org/" text="Planet Debian" useCustomFetchInterval="false" type="rss" title="Planet Debian" xmlUrl="http://planet.debian.org/rss20.xml" maxArticleAge="0" description="Planet Debian - https://planet.debian.org/" maxArticleNumber="0" comment="" faviconUrl="file:///home/gherz/.cache/favicons/planet.debian.org.png" archiveMode="globalDefault" copyright="" fetchInterval="0" id="4120075628"/>
+   <outline version="RSS" htmlUrl="https://www.debian.org/News/" text="Debian News" useCustomFetchInterval="false" type="rss" title="Debian News" xmlUrl="http://www.debian.org/News/news" maxArticleAge="0" description="&lt;br/>Últimas noticias de Debian&lt;br/>" maxArticleNumber="0" comment="" faviconUrl="file:///home/gherz/.cache/favicons/www.debian.org.png" archiveMode="globalDefault" copyright="" fetchInterval="0" id="649515821"/>
+  </outline>
+ </body>
+</opml>
+

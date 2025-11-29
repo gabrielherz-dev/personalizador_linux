@@ -1,0 +1,25 @@
+[FileDialogSize]
+1024x768 screen: Window-Maximized=true
+
+[KFileDialog Settings]
+Recent Files[$e]=file:///mnt/NAS/scripts_install_debian/thinkpad/config/wallpapers/Elephant_in_Forest_Painting_Debian_Version_4K_Wallpaper.jpg,file:$HOME/wallpapers/wallpaper_debian_principal.jpg,file:$HOME/wallpapers/asus-tuf-wallpaper.jpg
+Recent URLs[$e]=file:$HOME/wallpapers/
+detailViewIconSize=16
+iconViewIconSize=128
+listViewIconSize=64
+
+[PlasmaViews][Panel 2]
+floating=0
+panelOpacity=1
+
+[PlasmaViews][Panel 2][Defaults]
+thickness=32
+
+[PlasmaViews][Panel 40][Defaults]
+thickness=30
+
+[PlasmaViews][Panel 59][Defaults]
+thickness=32
+
+[Updates]
+performed=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/maintain_existing_desktop_icon_sizes.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/move_desktop_layout_config.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/digitalclock_migrate_font_settings.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/keyboardlayout_remove_shortcut.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/unlock_widgets.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/no_middle_click_paste_on_panels.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/mediaframe_migrate_useBackground_setting.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/systemloadviewer_systemmonitor.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/containmentactions_middlebutton.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/klipper_clear_config.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/digitalclock_rename_timezonedisplay_key.js,/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/keyboardlayout_migrateiconsetting.js

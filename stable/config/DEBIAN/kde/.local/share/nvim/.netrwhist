@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =3
+let g:netrw_dirhist_3='/usr/share/wallpapers/Next/contents/images_dark'
+let g:netrw_dirhist_2='/usr/share/wallpapers/Next/contents'
+let g:netrw_dirhist_1='/usr/share/wallpapers/Next'

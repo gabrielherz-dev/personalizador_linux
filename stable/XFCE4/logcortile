@@ -1,0 +1,13 @@
+date
+Obj:1 http://security.debian.org/debian-security bookworm-security InRelease
+Obj:2 http://deb.debian.org/debian bookworm InRelease
+Obj:3 http://deb.debian.org/debian bookworm-updates InRelease
+Des:4 http://download.opensuse.org/repositories/home:/manuelschneid3r/Debian_12  InRelease [1.537 B]
+Err:4 http://download.opensuse.org/repositories/home:/manuelschneid3r/Debian_12  InRelease
+  Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY 1488EB46E192A257
+Leyendo lista de paquetes... Hecho
+W: Error de GPG: http://download.opensuse.org/repositories/home:/manuelschneid3r/Debian_12  InRelease: Las firmas siguientes no se pudieron verificar porque su clave pública no está disponible: NO_PUBKEY 1488EB46E192A257
+E: El repositorio «http://download.opensuse.org/repositories/home:/manuelschneid3r/Debian_12  InRelease» no está firmado.
+N: No se puede actualizar de un repositorio como este de forma segura y por tanto está deshabilitado por omisión.
+N: Vea la página de manual apt-secure(8) para los detalles sobre la creación de repositorios y la configuración de usuarios.
+

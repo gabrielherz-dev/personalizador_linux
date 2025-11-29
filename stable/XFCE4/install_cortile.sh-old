@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Instalación de Cortile en Debian 12 XFCE4 usando binario precompilado
+
+## Dependencias necesarias
+#apt update
+#apt install -y wget jq tar
+
+# Carpeta de instalación
+INSTALL_DIR="$HOME/.local/bin"
+mkdir -p "$INSTALL_DIR"
+
+# Descargar y extraer el binario más reciente
+echo "Descargando la última versión de Cortile..."
+wget -qO- $(wget -qO- https://api.github.com/repos/leukipp/cortile/releases/latest | \
+jq -r '.assets[] | select(.name | contains ("linux_amd64.tar.gz")) | .browser_download_url') \
+| tar -xz -C "$INSTALL_DIR"
+
+# Asegurar permisos de ejecución
+chmod +x "$INSTALL_DIR"/cortile*
+
+# Usar nombre estándar sin la versión para facilitar llamadas
+if [[ -f "$INSTALL_DIR/cortile" ]]; then
+    BIN="$INSTALL_DIR/cortile"
+else
+    BIN=$(find "$INSTALL_DIR" -type f -name "cortile*" | head -n1)
+    ln -sf "$BIN" "$INSTALL_DIR/cortile"
+fi
+
+# Añadir $INSTALL_DIR al PATH si no está
+if ! grep -q "$INSTALL_DIR" <<< "$PATH"; then
+    echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$HOME/.bashrc"
+fi
+
+# Crear archivo de autostart en XFCE
+AUTOSTART_DIR="$HOME/.config/autostart"
+mkdir -p "$AUTOSTART_DIR"
+
+cat > "$AUTOSTART_DIR/cortile.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Cortile
+Exec=$BIN
+Comment=Auto-tiling para XFCE4
+X-GNOME-Autostart-enabled=true
+EOF
+
+echo "Instalación completada."
+echo "El binario está en: $BIN"
+echo "Se ejecutará automáticamente al iniciar sesión."
+#echo "Si quieres probarlo ahora, ejecuta: $BIN &"
+
+#ejecución automática
+./cortile
+

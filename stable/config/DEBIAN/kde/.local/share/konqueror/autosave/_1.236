@@ -1,0 +1,72 @@
+[General]
+Number of Windows=2
+
+[Window0]
+1024x768 screen: Height=245
+1024x768 screen: Width=416
+FullScreen=false
+HistoryItemViewT0_0LocationBarURL=konq:blank
+HistoryItemViewT0_0StrServiceName=webenginepart
+HistoryItemViewT0_0StrServiceType=text/html
+HistoryItemViewT0_0Title=
+HistoryItemViewT0_0Url=konq:blank
+HistoryItemViewT0_1Buffer=\x00\x00\x00\x0ekonq:konqueror\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff
+HistoryItemViewT0_1DoPost=false
+HistoryItemViewT0_1LocationBarURL=
+HistoryItemViewT0_1PageReferrer=
+HistoryItemViewT0_1PageSecurity=0
+HistoryItemViewT0_1PostContentType=
+HistoryItemViewT0_1PostData=
+HistoryItemViewT0_1StrServiceName=webenginepart
+HistoryItemViewT0_1StrServiceType=text/html
+HistoryItemViewT0_1Title=Libérese.
+HistoryItemViewT0_1Url=konq:konqueror
+RootItem=Tabs0
+State=AAAA/wAAAAD9AAAAAAAAAaAAAACqAAAABAAAAAQAAAAIAAAACPwAAAACAAAAAgAAAAMAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgEAAAAA/////wAAAAAAAAAAAAAAGABlAHgAdAByAGEAVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAAAAAAHgBsAG8AYwBhAHQAaQBvAG4AVABvAG8AbABCAGEAcgEAAAEo/////wAAAAAAAAAAAAAAAgAAAAMAAAAeAGIAbwBvAGsAbQBhAHIAawBUAG8AbwBsAEIAYQByAAAAAAD/////AAAAAAAAAAAAAAAWAGgAdABtAGwAVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAAAAAAGgBzAHAAZQBlAGMAaABUAG8AbwBsAGIAYQByAAAAAAD/////AAAAAAAAAAA=
+StatusBar=Enabled
+Tabs0_Children=ViewT0
+Tabs0_activeChildIndex=0
+ViewT0_CurrentHistoryItem=1
+ViewT0_LinkedView=false
+ViewT0_LockedLocation=false
+ViewT0_NumberOfHistoryItems=2
+ViewT0_PassiveMode=false
+ViewT0_ServiceName=webenginepart
+ViewT0_ServiceType=text/html
+ViewT0_ShowStatusBar=true
+ViewT0_ToggleView=false
+
+[Window1]
+1024x768 screen: Height=707
+1024x768 screen: Width=416
+FullScreen=false
+HistoryItemViewT0_0LocationBarURL=konq:blank
+HistoryItemViewT0_0StrServiceName=webenginepart
+HistoryItemViewT0_0StrServiceType=text/html
+HistoryItemViewT0_0Title=Libérese.
+HistoryItemViewT0_0Url=konq:blank
+HistoryItemViewT0_1Buffer=\x00\x00\x002https://duckduckgo.com/?q=text%2Fhtml&t=kde&ia=web\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xff\xff\xff\xff
+HistoryItemViewT0_1DoPost=false
+HistoryItemViewT0_1LocationBarURL=https://duckduckgo.com/?q=text%2Fhtml&t=kde&ia=web
+HistoryItemViewT0_1PageReferrer=
+HistoryItemViewT0_1PageSecurity=0
+HistoryItemViewT0_1PostContentType=
+HistoryItemViewT0_1PostData=
+HistoryItemViewT0_1StrServiceName=webenginepart
+HistoryItemViewT0_1StrServiceType=text/html
+HistoryItemViewT0_1Title=text/html at DuckDuckGo
+HistoryItemViewT0_1Url=https://duckduckgo.com/?q=text%2Fhtml&t=kde&ia=web
+RootItem=Tabs0
+State=AAAA/wAAAAD9AAAAAAAAAaAAAAJ4AAAABAAAAAQAAAAIAAAACPwAAAACAAAAAgAAAAMAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgEAAAAA/////wAAAAAAAAAAAAAAGABlAHgAdAByAGEAVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAAAAAAHgBsAG8AYwBhAHQAaQBvAG4AVABvAG8AbABCAGEAcgEAAAEo/////wAAAAAAAAAAAAAAAgAAAAMAAAAeAGIAbwBvAGsAbQBhAHIAawBUAG8AbwBsAEIAYQByAAAAAAD/////AAAAAAAAAAAAAAAWAGgAdABtAGwAVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAAAAAAGgBzAHAAZQBlAGMAaABUAG8AbwBsAGIAYQByAAAAAAD/////AAAAAAAAAAA=
+StatusBar=Enabled
+Tabs0_Children=ViewT0
+Tabs0_activeChildIndex=0
+ViewT0_CurrentHistoryItem=1
+ViewT0_LinkedView=false
+ViewT0_LockedLocation=false
+ViewT0_NumberOfHistoryItems=2
+ViewT0_PassiveMode=false
+ViewT0_ServiceName=webenginepart
+ViewT0_ServiceType=text/html
+ViewT0_ShowStatusBar=true
+ViewT0_ToggleView=false

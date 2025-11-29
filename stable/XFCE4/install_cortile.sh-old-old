@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Instalación de Cortile en Debian 12 XFCE4 usando binario precompilado con verificación SHA256
+
+# Dependencias necesarias (incluye certificados para HTTPS y verificación hash)
+apt update
+apt install -y wget jq tar ca-certificates coreutils
+
+# Actualizar certificados
+update-ca-certificates
+
+# Carpeta de instalación
+INSTALL_DIR="$HOME/.local/bin"
+mkdir -p "$INSTALL_DIR"
+
+# Rutas temporales
+TMP_DIR=$(mktemp -d)
+TAR_FILE="$TMP_DIR/cortile.tar.gz"
+SHA_FILE="$TMP_DIR/cortile.sha256"
+
+# Obtener URL del binario y de la suma SHA256
+ASSET_INFO=$(wget -qO- https://api.github.com/repos/leukipp/cortile/releases/latest)
+BIN_URL=$(echo "$ASSET_INFO" | jq -r '.assets[] | select(.name | endswith("linux_amd64.tar.gz")) | .browser_download_url')
+SHA_URL=$(echo "$ASSET_INFO" | jq -r '.assets[] | select(.name | endswith("linux_amd64.tar.gz.sha256")) | .browser_download_url')
+
+if [[ -z "$BIN_URL" ]]; then
+    echo "❌ No se encontró binario para linux_amd64 en la última release."
+    exit 1
+fi
+
+if [[ -z "$SHA_URL" ]]; then
+    echo "❌ No se encontró archivo SHA256 en la última release."
+    exit 1
+fi
+
+echo "📥 Descargando binario..."
+wget -qO "$TAR_FILE" "$BIN_URL"
+
+echo "📥 Descargando suma SHA256..."
+wget -qO "$SHA_FILE" "$SHA_URL"
+
+# Verificar integridad
+echo "🔍 Verificando integridad..."
+cd "$TMP_DIR"
+if ! sha256sum --check --status "$SHA_FILE"; then
+    echo "❌ Verificación de hash fallida. Abortando instalación."
+    exit 1
+fi
+cd -
+
+echo "✅ Verificación correcta."
+
+# Extraer binario
+tar -xz -C "$INSTALL_DIR" -f "$TAR_FILE"
+chmod +x "$INSTALL_DIR"/cortile*
+
+# Usar nombre estándar
+if [[ -f "$INSTALL_DIR/cortile" ]]; then
+    BIN="$INSTALL_DIR/cortile"
+else
+    BIN=$(find "$INSTALL_DIR" -type f -name "cortile*" | head -n1)
+    ln -sf "$BIN" "$INSTALL_DIR/cortile"
+fi
+
+# Añadir al PATH si no está
+if ! grep -q "$INSTALL_DIR" <<< "$PATH"; then
+    echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$HOME/.bashrc"
+fi
+
+# Crear autostart
+AUTOSTART_DIR="$HOME/.config/autostart"
+mkdir -p "$AUTOSTART_DIR"
+
+cat > "$AUTOSTART_DIR/cortile.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Cortile
+Exec=$BIN
+Comment=Auto-tiling para XFCE4
+X-GNOME-Autostart-enabled=true
+EOF
+
+echo "🎉 Instalación completada."
+echo "📂 Binario: $BIN"
+echo "⚡ Para ejecutarlo ahora: $BIN &"
+
+# Limpiar temporales
+rm -rf "$TMP_DIR"
+

@@ -1,0 +1,42 @@
+[$Version]
+update_info=gwenview.upd:SideBar_StatusBar_Rename,gwenview.upd:ImageView_AlphaBackgroundMode_Update,gwenview.upd:DeleteThumbnailSetting_Rename
+
+[FullScreen]
+FullScreenModeActive=true
+
+[General]
+LastUsedVersion=210800
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=32
+
+[MainWindow]
+MenuBar=Disabled
+State=AAAA/wAAAAD9AAAAAAAAAoAAAAGyAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgEAAAAA/////wAAAAAAAAAA
+ToolBarsMovable=Disabled
+
+[Recent Files]
+File1[$e]=$HOME/wallpapers/wallpape.sdfds
+File10[$e]=$HOME/wallpapers/wallpaper_thinkpad.jpg
+File2[$e]=$HOME/wallpapers/wallpaper_asus.jpg
+File3[$e]=$HOME/wallpapers/wallpaper_asus2.jpg
+File4[$e]=$HOME/wallpapers/wallpaper_asus4.jpg
+File5[$e]=$HOME/wallpapers/wallpaper_deb.jpg
+File6[$e]=$HOME/wallpapers/wallpaper_debian_naranja.jpg
+File7[$e]=$HOME/wallpapers/wallpaper_debian_principal.jpg
+File8[$e]=$HOME/wallpapers/Wallpaper_debian1.jpg
+File9[$e]=$HOME/wallpapers/wallpaper_debian2.jpeg
+Name1[$e]=wallpape.sdfds
+Name10[$e]=wallpaper_thinkpad.jpg
+Name2[$e]=wallpaper_asus.jpg
+Name3[$e]=wallpaper_asus2.jpg
+Name4[$e]=wallpaper_asus4.jpg
+Name5[$e]=wallpaper_deb.jpg
+Name6[$e]=wallpaper_debian_naranja.jpg
+Name7[$e]=wallpaper_debian_principal.jpg
+Name8[$e]=Wallpaper_debian1.jpg
+Name9[$e]=wallpaper_debian2.jpeg
+
+[SideBar]
+InformationSplitterSizes=207,248
