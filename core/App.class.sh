@@ -35,16 +35,17 @@ App.new() {
   ref["gnupg"]="gnupg"
   #Certificados digitales , también para albert launcher
   ref["ca-certificates"]="ca-certificates"
-
-  if [[ $EUID -ne 0 ]]; then
-    echo "Este script necesita privilegios de superusuario."
-    exit 1
-  fi
+  #Ulauncher 
+  ref["ulauncher"]="ulauncher"
 
   #cp config/.dialogrc "$RUTA_ORIGEN/"
   mkdir -vp "$TARGET_HOME/.config/wezterm"
   cp "$RUTA_ACTUAL/config/wezterm.lua" "$TARGET_HOME/.config/wezterm/wezterm.lua"
   App.installTerminal
+
+  #  AGREGA EL REPOSITORIO PARA OBTENER LA ÚLTIMA VERSIÓN DE ULAUNCHER 
+  add-apt-repository ppa:agornostal/ulauncher
+  apt update
 }
 
 #App.addRepos() {

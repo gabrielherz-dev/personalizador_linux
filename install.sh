@@ -37,7 +37,7 @@ UBUNTU_BRANCH=$(dialog --clear \
   --title "¿Qué versión de personalización quieres usar?" \
   --menu "Selecciona tu versión para personalizar las opciones de instalación:" \
   15 50 2 \
-  stable "Versión LTS Server" \
+  stable "UBUNTU LTS Server" \
   3>&1 1>&2 2>&3)
 
 # Cancelado o error
@@ -53,7 +53,7 @@ THEME_SELECTED=$(dialog --clear \
   --title "¿Cuál tema deseas usar?" \
   --menu "Selecciona el tema :" \
   15 50 2 \
-  UBUNTU "UBUNTU" \
+#  UBUNTU "UBUNTU" \
   THINKPAD "THINKPAD" \
   3>&1 1>&2 2>&3)
 
@@ -66,7 +66,7 @@ THEME_SELECTED=$(dialog --clear \
 CURRENT_USER=$(whoami)
 IS_ROOT="NO_ROOT"
 # Las opciones varían según el tipo de usuario
-if [[ $EUID -eq 0]]; then
+if [[ $EUID -eq 0 ]]; then
   IS_ROOT="ROOT"
    apt update
   apt upgrade
@@ -79,10 +79,9 @@ if [[ $EUID -eq 0]]; then
     7 "Crear Subvolumenes" off
     8 "Instalar perfiles AppArmour" off
     9 "Instalar GNOME" off
-    12 "Instalar ULAUNCHER" off
     13 "Instalar tema ULAUNCHER" off
   )
-elseif [[ "CURRENT_USER" == "gherz" ]]; then
+elif [[ "CURRENT_USER" == "gherz" ]]; then
   OPTIONS=(
     1 "Instalar POP-SHELL para GNOME (ejecutar en sesión de GNOME" off
     2 "Instalar GNOME  de iniciar sesión)" off
@@ -150,7 +149,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "ROOT-7")
     echo "Creando Subvolúmenes..."
-    testing/install_subvolumenes_debian.sh
+    testing/install_subvolumenes.sh
     # testing/crear_subvols.sh
     ;;
   "ROOT-8")
@@ -163,10 +162,6 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     GnomeApp.new GN
     GnomeApp.installApps GN
     GnomeApp.installConfig GN
-    ;;
-  "ROOT-12")
-    echo "Instalando ulauncher..."
-    testing/install_ulauncher.sh
     ;;
   "ROOT-13")
     echo "Instalando tema de ulauncher..."

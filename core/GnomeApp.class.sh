@@ -28,8 +28,16 @@ GnomeApp.new() {
   rself["dconf-editor"]="dconf help"
   rself["gnome-shell-extensions"]="gnome-shell-extension-tool"
   rself["gnome-tweaks"]="gnome-tweaks"
-  rself["xbindkeys"]="gsettings"
-  rself["xdotool"]="xdotool"
+  #xbindkeys -> input-remapper (GUI para botones del ratón) o usa los Atajos de teclado de GNOME. 
+  rself["input-remapper"]="input-remapper"
+  #xdotool -> ydotool (requiere daemon) o wtype (solo escritura).
+  rself["ydotool"]="ydotool"
+  rself["wtype"]="wtype"
+  
+  #antiguo XORG
+  #rself["xbindkeys"]="gsettings"
+  #rself["xdotool"]="xdotool"
+  #todo gnome
   #rself["gnome-core"]="gnome-session"
 
 }

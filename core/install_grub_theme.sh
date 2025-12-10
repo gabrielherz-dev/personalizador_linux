@@ -13,7 +13,7 @@ ARCHIVO_TEMA="theme.txt"
 LINEA_TEMA="GRUB_THEME=$DESTINO/GRUB_Debian/$ARCHIVO_TEMA"
 
 echo "Te,a seleccionado $1"
-if [[ "$1" == "$DEBIAN_THEME" ]]; then
+if [[ "$1" == "$UBUNTU_THEME" ]]; then
   TEMA_ORIGEN="$RUTA_ACTUAL/config/DEBIAN/GRUB_Debian"
   # Ruta destino
   DESTINO="/boot/grub/themes/Debian"
