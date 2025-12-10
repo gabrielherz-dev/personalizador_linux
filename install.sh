@@ -53,7 +53,6 @@ THEME_SELECTED=$(dialog --clear \
   --title "¿Cuál tema deseas usar?" \
   --menu "Selecciona el tema :" \
   15 50 2 \
-#  UBUNTU "UBUNTU" \
   THINKPAD "THINKPAD" \
   3>&1 1>&2 2>&3)
 
@@ -65,6 +64,7 @@ THEME_SELECTED=$(dialog --clear \
 # Obtener el nombre de usuario actual
 CURRENT_USER=$(whoami)
 IS_ROOT="NO_ROOT"
+OPTIONS=() 
 # Las opciones varían según el tipo de usuario
 if [[ $EUID -eq 0 ]]; then
   IS_ROOT="ROOT"
