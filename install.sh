@@ -91,7 +91,7 @@ if [[ "$CURRENT_USER" == "gherz" ]]; then
 fi
 #El tilling window assistant para GNOME se instala desde una sesión GNOME iniciada
 if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"*
-      && "$CURRENT_USER" == "gherz"]]; then
+      && "$CURRENT_USER" == "gherz" ]]; then
   OPTIONS=(
     1 "Instalar Tilling-assistant para GNOME" on
   )
