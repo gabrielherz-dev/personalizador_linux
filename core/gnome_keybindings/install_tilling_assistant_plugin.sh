@@ -1,61 +1,69 @@
 
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Nombre y UUID de la extensión
-EXTENSION_NAME="Tiling Assistant"
-EXTENSION_UUID="tiling-assistant@fthx"
-EXTENSION_ID="3733"
+EXT_UUID="tiling-assistant@fthx"
+EXT_ID="3733"
+EXT_NAME="Tiling Assistant"
 
-# Funciones útiles
-print_status() { echo -e "\n\e[1m\e[34m[INFO]\e[0m $1"; }
-print_success() { echo -e "\n\e[1m\e[32m[ÉXITO]\e[0m $1"; }
-print_error() { echo -e "\n\e[1m\e[31m[ERROR]\e[0m $1"; exit 1; }
+# util
+err(){ echo -e "\e[31mERROR:\e[0m $*" >&2; exit 1; }
+info(){ echo -e "\e[34m[INFO]\e[0m $*"; }
+ok(){ echo -e "\e[32m[OK]\e[0m $*"; }
 
-print_status "Instalando $EXTENSION_NAME..."
+# 1) versión de GNOME Shell
+GNOME_VER=$(gnome-shell --version 2>/dev/null | grep -oP '[0-9]+' | head -1 || true)
+[ -n "$GNOME_VER" ] || err "No puedo detectar gnome-shell. ¿Estás en GNOME?"
 
-# Verificar GNOME Shell
-if ! command -v gnome-shell &>/dev/null; then
-    print_error "GNOME Shell no está instalado."
+info "GNOME Shell version: $GNOME_VER"
+
+# 2) Obtener pk (version_tag) desde extension-query
+RAW=$(curl -s "https://extensions.gnome.org/extension-query/?search=${EXT_UUID}")
+# extraer el objeto que coincida con el uuid
+PK=$(echo "$RAW" | jq -r ".extensions[] | select(.uuid==\"$EXT_UUID\") | .shell_version_map.\"$GNOME_VER\".pk" 2>/dev/null || true)
+
+if [ -z "$PK" ] || [ "$PK" = "null" ]; then
+  echo "No se ha encontrado version_tag (pk) para GNOME $GNOME_VER."
+  echo "Salida parcial de shell_version_map:"
+  echo "$RAW" | jq -r ".extensions[] | select(.uuid==\"$EXT_UUID\") | .shell_version_map"
+  err "No hay pk para tu versión de GNOME o la extensión no soporta esta versión."
 fi
 
-# Instalar dependencias
-print_status "Instalando dependencias..."
-sudo apt update
-sudo apt install -y curl unzip chrome-gnome-shell gnome-shell-extensions \
-    gnome-extensions-app || print_error "Fallo al instalar dependencias."
+info "version_tag (pk) encontrado: $PK"
 
-# Detectar versión de GNOME Shell (solo número mayor)
-GNOME_VER=$(gnome-shell --version | grep -oP '[0-9]+' | head -1)
-if [ -z "$GNOME_VER" ]; then
-    print_error "No se pudo detectar la versión de GNOME Shell."
+# 3) construir URL y descargar con headers 'Referer' y 'User-Agent'
+DOWNLOAD_URL="https://extensions.gnome.org/download-extension/${EXT_UUID}.shell-extension.zip?version_tag=${PK}"
+TMPZIP="/tmp/${EXT_UUID}-${PK}.zip"
+
+info "Descargando desde: $DOWNLOAD_URL (añadiendo Referer y User-Agent)"
+# header Referer = la página de la extensión (usado por el sitio)
+REFERER="https://extensions.gnome.org/extension/${EXT_ID}/"
+# user agent tipo navegador
+UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+
+# usa -f para que curl falle con código >=400
+if ! curl -fL -A "$UA" -H "Referer: $REFERER" -H "Accept: */*" "$DOWNLOAD_URL" -o "$TMPZIP"; then
+  rm -f "$TMPZIP" || true
+  err "Fallo al descargar: el servidor devolvió 4xx/5xx. Posibles causas: pk inválido, pk expirado o falta de compatibilidad."
 fi
-print_status "Versión de GNOME Shell: $GNOME_VER"
 
-# Directorios y archivos
-EXTENSION_DIR="$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID"
-ZIP_FILE="extension-$EXTENSION_ID-$GNOME_VER.zip"
+ok "ZIP descargado a $TMPZIP"
 
-# Descargar la extensión adecuada
-DOWNLOAD_URL="https://extensions.gnome.org/download-extension/$EXTENSION_UUID/$GNOME_VER.zip"
-print_status "Descargando $DOWNLOAD_URL"
-curl -fL "$DOWNLOAD_URL" -o "$ZIP_FILE" || \
-    print_error "Fallo al descargar la extensión. Posiblemente no hay versión para GNOME $GNOME_VER."
+# 4) descomprimir en el directorio correcto
+EXT_DIR="$HOME/.local/share/gnome-shell/extensions/${EXT_UUID}"
+mkdir -p "$EXT_DIR"
+info "Descomprimiendo en $EXT_DIR"
+unzip -o "$TMPZIP" -d "$EXT_DIR" >/dev/null || err "Fallo al descomprimir."
 
-# Crear directorio y descomprimir
-print_status "Creando directorio: $EXTENSION_DIR"
-mkdir -p "$EXTENSION_DIR" || print_error "No se pudo crear el directorio."
-print_status "Descomprimiendo extensión..."
-unzip -o "$ZIP_FILE" -d "$EXTENSION_DIR" || \
-    print_error "Fallo al descomprimir."
+rm -f "$TMPZIP"
+ok "Extensión instalada en $EXT_DIR"
 
-# Limpiar
-rm -f "$ZIP_FILE"
+# 5) Habilitar
+if command -v gnome-extensions >/dev/null 2>&1; then
+  gnome-extensions enable "$EXT_UUID" || info "gnome-extensions no pudo habilitar (quizá necesites reiniciar shell)."
+else
+  info "gnome-extensions no está disponible; habilita manualmente o instala gnome-extensions-app."
+fi
 
-# Habilitar extensión
-print_status "Habilitando $EXTENSION_UUID"
-gnome-extensions enable "$EXTENSION_UUID" || \
-    print_error "No se pudo habilitar la extensión."
-
-print_success "¡$EXTENSION_NAME instalada y habilitada!"
-
-echo -e "\n\e[1m\e[33m[ATENCIÓN]\e[0m Reinicia GNOME Shell (Alt+F2 → r → Enter) o cierra y vuelve a iniciar sesión para aplicar cambios."
+echo
+ok "Instalación finalizada. Reinicia GNOME Shell (Alt+F2 → r → Enter) o vuelve a iniciar sesión."
