@@ -81,13 +81,19 @@ if [[ $EUID -eq 0 ]]; then
     9 "Instalar GNOME" off
     13 "Instalar tema ULAUNCHER" off
   )
-elif [[ "CURRENT_USER" == "gherz" ]]; then
+fi  
+if [[ "$CURRENT_USER" == "gherz" ]]; then
   OPTIONS=(
-    1 "Instalar POP-SHELL para GNOME (ejecutar en sesión de GNOME" off
-    2 "Instalar GNOME  de iniciar sesión)" off
-    4 "Instalar LazzyVim" off
-    5 "Instalar RANGER" off
-    6 "Instalar Wezterm" off
+    4 "Instalar LazzyVim" on
+    5 "Instalar tema RANGER" on
+    6 "Instalar tema Wezterm" on
+  )
+fi
+#El tilling window assistant para GNOME se instala desde una sesión GNOME iniciada
+if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"*
+      && "$CURRENT_USER" == "gherz"]]; then
+  OPTIONS=(
+    1 "Instalar Tilling-assistant para GNOME" on
   )
 fi
 
@@ -108,12 +114,12 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
   "NO_ROOT-1")
     echo "Instalando POP-SHELL para GNOME con Keybindings..."
     # sudo apt install -y gnome-core gdm3
-    stable/gnome_keybindings/install.sh
+    core/gnome_keybindings/install.sh
     ;;
   "NO_ROOT-4")
     echo "Instalando Nvim/LazzyVim..."
-    stable/install_nvim_src.sh
-    stable/install_lazzyvim.sh
+    #core/install_nvim_src.sh
+    core/install_lazzyvim.sh
     ;;
   "NO_ROOT-5")
     echo "Instalando tema RANGER..."
@@ -121,7 +127,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "NO_ROOT-6")
     echo "Instalando Wezterm..."
-    stable/install_wezterm.sh
+    core/install_wezterm.sh
     mkdir -p "$HOME/.config/wezterm"
     cp -r "$RUTA_ORIGEN/config/wezterm" "$HOME/.config"
     ;;
@@ -134,13 +140,13 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "ROOT-3")
     echo "Instalando Tema de GRUB..."
-    testing/install_grub_theme.sh "$THEME_SELECTED"
-    testing/install_fuente_grub_tty.sh
-    testing/install_fuentes_initramfs_tty.sh
+    core/install_grub_theme.sh "$THEME_SELECTED"
+    core/install_fuente_grub_tty.sh
+    core/install_fuentes_initramfs_tty.sh
     ;;
   "ROOT-4")
     echo "Instalando Ahorro de Batería..."
-    testing/install_battery_save.sh
+    core/install_battery_save.sh
     ;;
   "ROOT-6")
     echo "Instalando FLAT APPS..."
@@ -149,12 +155,12 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "ROOT-7")
     echo "Creando Subvolúmenes..."
-    testing/install_subvolumenes.sh
-    # testing/crear_subvols.sh
+    core/install_subvolumenes.sh
+    # core/crear_subvols.sh
     ;;
   "ROOT-8")
     echo "Instalando perfiles AppArmor..."
-    testing/seguridad/crear_perfiles_apparmor.sh
+    core/seguridad/crear_perfiles_apparmor.sh
     # sudo apt install apparmor-profiles apparmor-utils
     ;;
   "ROOT-9")
@@ -165,7 +171,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "ROOT-13")
     echo "Instalando tema de ulauncher..."
-    testing/install_ulauncher_theme.sh
+    core/install_ulauncher_theme.sh
     ;;
   *)
     echo "Opción no reconocida: $CHOICE"

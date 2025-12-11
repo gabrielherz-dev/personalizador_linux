@@ -36,7 +36,7 @@ if [ ! -f "$TEMA_ORIGEN/$ARCHIVO_TEMA" ]; then
 fi
 
 # Instalando wallpapers en el sistema
-cp -r "$RUTA_ORIGEN/config/wallpapers" /usr/share/wallpapers
+cp -r "$RUTA_ORIGEN/config/wallpapers" /usr/share/backgrounds
 
 # Crea el directorio de destino
 echo "Copiando tema a $DESTINO..."

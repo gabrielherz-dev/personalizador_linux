@@ -5,6 +5,9 @@ source "$RUTA_ACTUAL/../../config/constantes.sh"
 
 #Ya no hace falta instalar pop shell
 #$RUTA_ACTUAL/install_popshell_plugin.sh -y
+
+#Instalación del plugin tilling assistant para GNOME
+$RUTA_ACTUAL/install_tilling_assistant_plugin.sh -y
 # Instalación de los scripts en bash para los keybindings
 $RUTA_ACTUAL/core/reboot_keybinding.sh
 $RUTA_ACTUAL/core/screenshots_keybinding.sh
