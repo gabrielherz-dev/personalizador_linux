@@ -70,8 +70,8 @@ if [[ $EUID -eq 0 ]]; then
   IS_ROOT="ROOT"
    apt update
   apt upgrade
-# ROOOT se hace dueño de todos los ficheros
-  chown -R $USER:$USER .
+#Antes de ejecutar las opciones de instalación, cambio los permisos a los ficheros ejecutables para el usuario actual
+ chmod -R u+x  .
   OPTIONS=(
 
     1 "Instalar APP" on
@@ -87,6 +87,8 @@ fi
 if [[ "$CURRENT_USER" == "gherz" ]]; then
   # Me hago dueño de todos los ficheros como usuario 
   sudo chown -R $USER:$USER .
+#Antes de ejecutar las opciones de instalación, cambio los permisos a los ficheros ejecutables para el usuario actual
+  sudo chmod -r u+x .
   OPTIONS=(
     4 "Instalar LazzyVim" on
     5 "Instalar tema RANGER" on
@@ -98,11 +100,11 @@ if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"*
       && "$CURRENT_USER" == "gherz" ]]; then
   OPTIONS=(
     1 "Instalar Tilling-assistant para GNOME" on
-  )
+    4 "Instalar LazzyVim" on
+    5 "Instalar tema RANGER" on
+    6 "Instalar tema Wezterm" on
+ )
 fi
-
-#Antes de ejecutar las opciones de instalación, cambio los permisos a los ficheros ejecutables para el usuario actual
-find . -type f -exec grep -Il '^#!' {} \; -exec chmod u+x {} \;
 
 
 # Mostrar el checklist según la selección
