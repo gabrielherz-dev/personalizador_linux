@@ -97,6 +97,10 @@ if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"*
   )
 fi
 
+#Antes de ejecutar las opciones de instalación, cambio los permisos a los ficheros ejecutables para el usuario actual
+find . -type f -exec grep -Il '^#!' {} \; -exec chmod u+x {} \;
+
+
 # Mostrar el checklist según la selección
 CHOICES=$(dialog --clear \
   --backtitle "Personalizador de UBUNTU ($UBUNTU_BRANCH)" \
