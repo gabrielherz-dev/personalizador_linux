@@ -70,6 +70,8 @@ if [[ $EUID -eq 0 ]]; then
   IS_ROOT="ROOT"
    apt update
   apt upgrade
+# ROOOT se hace dueño de todos los ficheros
+  chown -R $USER:$USER .
   OPTIONS=(
 
     1 "Instalar APP" on
@@ -83,6 +85,8 @@ if [[ $EUID -eq 0 ]]; then
   )
 fi  
 if [[ "$CURRENT_USER" == "gherz" ]]; then
+  # Me hago dueño de todos los ficheros como usuario 
+  sudo chown -R $USER:$USER .
   OPTIONS=(
     4 "Instalar LazzyVim" on
     5 "Instalar tema RANGER" on
