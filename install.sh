@@ -193,7 +193,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     echo "Instalando Cosmic..."
     core/COSMIC/install_cosmic.sh
     core/COSMIC/config_gtk_qt.sh
-    install_screenshot_editor.sh
+    core/COSMIC/install_screenshot_editor.sh
     ;;
     "ROOT-13")
     echo "Instalando tema de ulauncher..."
