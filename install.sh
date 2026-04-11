@@ -11,7 +11,7 @@ source "$RUTA_ACTUAL/config/constantes.sh"
 source "$RUTA_ACTUAL/core/GnomeApp.class.sh"
 source "$RUTA_ACTUAL/core/App.class.sh"
 source "$RUTA_ACTUAL/core/FlatApp.class.sh"
-
+source "$RUTA_ACTUAL/core/KDEApp.class.sh"
 
 # Validar que dialog esté instalado
 command -v dialog >/dev/null 2>&1 || {
@@ -81,6 +81,7 @@ if [[ $EUID -eq 0 ]]; then
     7 "Crear Subvolumenes" off
     8 "Instalar perfiles AppArmour" off
     9 "Instalar GNOME" off
+    10 "Instalar KDE" off
     13 "Instalar tema ULAUNCHER" off
   )
 fi  
@@ -179,7 +180,21 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     GnomeApp.installApps GN
     GnomeApp.installConfig GN
     ;;
-  "ROOT-13")
+   "ROOT-10")
+    echo "Instalando KDE..."
+    KDEApp.new GN
+    KDEApp.installApps GN
+    # habillita el inicio de sesión
+    systemctl enable sddm
+    systemctl set-default graphical.target
+    ;; 
+    "ROOT-11")
+    echo "Instalando Cosmic..."
+    core/COSMIC/install_cosmic.sh
+    core/COSMIC/config_gtk_qt.sh
+    install_screenshot_editor.sh
+    ;;
+    "ROOT-14")
     echo "Instalando tema de ulauncher..."
     core/install_ulauncher_theme.sh
     ;;
