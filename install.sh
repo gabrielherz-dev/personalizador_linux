@@ -82,6 +82,7 @@ if [[ $EUID -eq 0 ]]; then
     8 "Instalar perfiles AppArmour" off
     9 "Instalar GNOME" off
     10 "Instalar KDE" off
+    11 "Instalar COSMIC" off
     13 "Instalar tema ULAUNCHER" off
   )
 fi  
@@ -194,7 +195,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     core/COSMIC/config_gtk_qt.sh
     install_screenshot_editor.sh
     ;;
-    "ROOT-14")
+    "ROOT-13")
     echo "Instalando tema de ulauncher..."
     core/install_ulauncher_theme.sh
     ;;
