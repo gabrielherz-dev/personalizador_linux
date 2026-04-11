@@ -13,7 +13,7 @@ sudo apt-get update
 
 echo "=== Instalando Cosmic Desktop (Wayland) y paquetes base ==="
 # Instalamos la sesión, el greeter, la terminal y los applets
-sudo apt-get install -y cosmic-session cosmic-greeter cosmic-terminal cosmic-applets
+sudo apt-get install -y cosmic-session cosmic-greeter cosmic-term cosmic-applets
 
 echo "=== Configurando Cosmic Greeter como gestor de arranque predeterminado ==="
 # Deshabilitamos GDM (si existe y está activo) y habilitamos cosmic-greeter
