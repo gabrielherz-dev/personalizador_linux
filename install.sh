@@ -101,10 +101,11 @@ fi
 if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"*
       && "$CURRENT_USER" == "gherz" ]]; then
   OPTIONS=(
-    1 "Instalar Tilling-assistant para GNOME" on
+    1 "Instalar Tilling-assistant para GNOME" off
     4 "Instalar LazzyVim" on
     5 "Instalar tema RANGER" on
     6 "Instalar tema Wezterm" on
+    7 "Instalar configuración de Cosmic" off
  )
 fi
 
@@ -143,7 +144,11 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     mkdir -p "$HOME/.config/wezterm"
     cp -r "$RUTA_ORIGEN/config/wezterm" "$HOME/.config"
     ;;
-
+  "NO_ROOT-7")
+    echo "Instalando configuración de Cosmic.."
+    core/COSMIC/config_cosmic.sh
+    core/COSMIC/config_gtk_qt.sh
+    ;;
 
   "ROOT-1")
     echo "Instalando Comandos Base..."
