@@ -80,6 +80,8 @@ KDEApp.installApps(){
 # habillita el inicio de sesión 
   systemctl enable sddm
   systemctl set-default graphical.target
+  # Si falla reconfiguro el gestor de arranque y habilito así sddm de forma manual
+  dpkg-reconfigure sddm
 }
 
 

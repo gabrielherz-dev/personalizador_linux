@@ -146,7 +146,8 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "NO_ROOT-7")
     echo "Instalando configuración de Cosmic.."
-    core/COSMIC/config_cosmic.sh
+    #No instalo el configurador de cosmic porque la api consmic-settings-control no está disponible en el binario actual
+#    core/COSMIC/config_cosmic.sh
     core/COSMIC/config_gtk_qt.sh
     ;;
 
@@ -197,8 +198,8 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     "ROOT-11")
     echo "Instalando Cosmic..."
     core/COSMIC/install_cosmic.sh
-    core/COSMIC/config_gtk_qt.sh
-    core/COSMIC/install_screenshot_editor.sh
+    #core/COSMIC/config_gtk_qt.sh
+    #core/COSMIC/install_screenshot_editor.sh
     ;;
     "ROOT-13")
     echo "Instalando tema de ulauncher..."
