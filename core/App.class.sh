@@ -35,13 +35,8 @@ App.new() {
   ref["gnupg"]="gnupg"
   #Certificados digitales , también para albert launcher
   ref["ca-certificates"]="ca-certificates"
-  #Ulauncher 
-  ref["ulauncher"]="ulauncher"
-
-  #cp config/.dialogrc "$RUTA_ORIGEN/"
-  mkdir -vp "$TARGET_HOME/.config/wezterm"
-  cp "$RUTA_ACTUAL/config/wezterm.lua" "$TARGET_HOME/.config/wezterm/wezterm.lua"
-  App.installTerminal
+  #Soporte para btrfs
+  ref["btrfs-progs"]="btrfs --version"
 
   #  AGREGA EL REPOSITORIO PARA OBTENER LA ÚLTIMA VERSIÓN DE ULAUNCHER 
   add-apt-repository ppa:agornostal/ulauncher
@@ -53,11 +48,6 @@ App.new() {
 #  echo "deb [signed-by=/usr/share/keyrings/wezfurlong-archive-keyring.gpg] https://apt.wezfurlong.org/ stable main" | sudo tee /etc/apt/sources.list.d/wezfurlong.list
 #  apt update
 #}
-# Instalación de Wezterm
-App.installTerminal() {
-  curl -LO https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/wezterm-20240203-110809-5046fc22.Ubuntu22.04.deb
-  apt install -y ./wezterm-20240203-110809-5046fc22.Ubuntu22.04.deb
-}
 
 App.install() {
   apt install -y "$1" | tee -a "$LOG_INSTALLATION"
