@@ -31,11 +31,11 @@ fi
 
 # Permitir que el usuario elija entre stable o testing
 UBUNTU_BRANCH=$(dialog --clear \
-  --backtitle "Selector de personalización de POP OS" \
+  --backtitle "Selector de personalización de OpenSuse" \
   --title "¿Qué versión de personalización quieres usar?" \
   --menu "Selecciona tu versión para personalizar las opciones de instalación:" \
   15 50 2 \
-  stable "COSMIC POP OS LTS 24.04" \
+  stable "Opensuse LEAP 16.0" \
   3>&1 1>&2 2>&3)
 
 # Cancelado o error
@@ -47,7 +47,7 @@ fi
 
 # Elegir Tema
 THEME_SELECTED=$(dialog --clear \
-  --backtitle "Selector de personalización de COSMIC-POPOS" \
+  --backtitle "Selector de personalización de OpenSuse LEAP" \
   --title "¿Cuál tema deseas usar?" \
   --menu "Selecciona el tema :" \
   15 50 2 \
@@ -75,7 +75,6 @@ if [[ $EUID -eq 0 ]]; then
     1 "Instalar APP" on
     6 "Instalar FLATPAK" on
     7 "Crear Subvolumenes" off
-    8 "Instalar perfiles AppArmour" off
   )
 fi  
 if [[ "$CURRENT_USER" == "gherz" ]]; then
@@ -86,7 +85,6 @@ if [[ "$CURRENT_USER" == "gherz" ]]; then
   OPTIONS=(
     4 "Instalar LazzyVim" on
     5 "Instalar tema RANGER" on
-    7 "Instalar configuración de Cosmic" off
   )
 fi
 
@@ -107,20 +105,12 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
   case "$IS_ROOT-$CHOICE" in
   "NO_ROOT-4")
     echo "Instalando Nvim/LazzyVim..."
-    #core/install_nvim_src.sh
     core/install_lazzyvim.sh
     ;;
   "NO_ROOT-5")
     echo "Instalando tema RANGER..."
     cp -r "$RUTA_ORIGEN/config/ranger" "$HOME/.config"
     ;;
-  "NO_ROOT-7")
-    echo "Instalando configuración de Cosmic.."
-    #No instalo el configurador de cosmic porque la api consmic-settings-control no está disponible en el binario actual
-#    core/COSMIC/config_cosmic.sh
-    core/COSMIC/config_gtk_qt.sh
-    ;;
-
   "ROOT-1")
     echo "Instalando Comandos Base..."
     App.new BASE
@@ -133,13 +123,9 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     ;;
   "ROOT-7")
     echo "Creando Subvolúmenes..."
-    core/install_subvolumenes.sh
+    core/zgh_install_subvolumenes.sh
+    core/zgh_install_snapper_config.sh
     # core/crear_subvols.sh
-    ;;
-  "ROOT-8")
-    echo "Instalando perfiles AppArmor..."
-    core/seguridad/crear_perfiles_apparmor.sh
-    # sudo apt install apparmor-profiles apparmor-utils
     ;;
   *)
     echo "Opción no reconocida: $CHOICE"
@@ -152,4 +138,4 @@ chown -R gherz:gherz /home/gherz
 find /home/gherz -type d -exec chmod 755 {} +
 find /home/gherz -type f -exec chmod 644 {} +
 
-echo "Personalización completada para Debian $UBUNTU_BRANCH"
+echo "Personalización completada para OpenSuse LEAP $UBUNTU_BRANCH"
