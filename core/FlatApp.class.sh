@@ -18,20 +18,17 @@ FlatApp.new() {
   #Borro los atributos de mi clase padre, solo me interesan los de esta clase hija
   unset self
   #rself["org.wezfurlong.wezterm"]="org.wezfurlong.wezterm"
-  rself["org.flameshot.Flameshot"]="org.flameshot.Flameshot"
   rself["com.brave.Browser"]="com.brave.Browser"
   rself["md.obsidian.Obsidian"]="md.obsidian.Obsidian"
   rself["org.chromium.Chromium"]="org.chromium.Chromium"
   rself["org.telegram.desktop"]="org.telegram.desktop"
   rself["org.gimp.GIMP"]="org.gimp.GIMP"
-  rself["org.kde.kolourpaint"]="org.kde.kolourpaint"
-  rself["org.kde.okular"]="org.kde.okular"
   rself["org.keepassxc.KeePassXC"]="org.keepassxc.KeePassXC"
   rself["app.zen_browser.zen"]="app.zen_browser.zen"
   FlatApp.addRepos
 }
 FlatApp.addRepos() {
-  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo  
 }
 # Métodos heredados
 # INVOCACIÓN AL MÉTODO SUPER (PADRE)

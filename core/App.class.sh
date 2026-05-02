@@ -35,11 +35,7 @@ App.new() {
   ref["gnupg"]="gnupg"
   #Certificados digitales , también para albert launcher
   ref["ca-certificates"]="ca-certificates"
-  #Soporte para btrfs
-  ref["btrfs-progs"]="btrfs --version"
 
-  #  AGREGA EL REPOSITORIO PARA OBTENER LA ÚLTIMA VERSIÓN DE ULAUNCHER 
-  add-apt-repository ppa:agornostal/ulauncher
   apt update
 }
 
@@ -50,7 +46,7 @@ App.new() {
 #}
 
 App.install() {
-  apt install -y "$1" | tee -a "$LOG_INSTALLATION"
+  zypper install -y "$1" | tee -a "$LOG_INSTALLATION"
 }
 
 App.checkInstall() {
