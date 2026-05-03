@@ -67,8 +67,7 @@ OPTIONS=()
 # Las opciones varían según el tipo de usuario
 if [[ $EUID -eq 0 ]]; then
   IS_ROOT="ROOT"
-   apt update
-  apt upgrade
+   zypper dup
 #Antes de ejecutar las opciones de instalación, cambio los permisos a los ficheros ejecutables para el usuario actual
  chmod -R u+x  .
   OPTIONS=(
@@ -87,7 +86,6 @@ if [[ "$CURRENT_USER" == "gherz" ]]; then
   sudo chmod -r u+x .
   OPTIONS=(
     3 "Instalar VSCODE-DISTROBOX" on
-    4 "Instalar LazzyVim" on
     5 "Instalar tema RANGER" on
   )
 fi
@@ -107,14 +105,10 @@ clear
 # Ejecutar acciones según las elecciones
 for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
   case "$IS_ROOT-$CHOICE" in
-   "NO_ROOT-4")
+   "NO_ROOT-3")
     echo "Instalando DistroBox/VSCODE..."
     core/zgh_setup_vscode.sh
     ;; 
-  "NO_ROOT-4")
-    echo "Instalando Nvim/LazzyVim..."
-    core/install_lazzyvim.sh
-    ;;
   "NO_ROOT-5")
     echo "Instalando tema RANGER..."
     cp -r "$RUTA_ORIGEN/config/ranger" "$HOME/.config"
