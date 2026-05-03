@@ -1,25 +1,3 @@
-kate
-Kompare  "Herramienta para visualizar diferencias entre archivos (diff)."
-ark  "Ficheros tar zip"
-KCalc
-Gwenview:
-Okular:
-spectacle
-KDE Connect
-KOrganizer
-KMail
-KNotes:
-Zanshin "Gestor de tareas basado en la metodología "Getting Things Done".
-Akregator: Lector de noticias RSS potente y organizado.
-Tokodon: Cliente para la red social Mastodon.
-vlc
-haruna
-
-Patrón
-kde_plasma
-
-
-packman
 
 #!/bin/bash
 # Script para configurar Packman y códecs en openSUSE Leap
@@ -39,5 +17,4 @@ echo "--- Instalando códecs adicionales y FFmpeg ---"
 #sudo zypper install --allow-vendor-change ffmpeg-7 libavcodec-full vlc-#codecs gstreamer-plugins-libav gstreamer-plugins-bad gstreamer-plugins-ugly #gstreamer-plugins-good-extra
 sudo zypper install -t pattern multimedia
 echo "--- Proceso completado ---"
-
 

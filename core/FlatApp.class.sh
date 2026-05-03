@@ -1,5 +1,5 @@
 # !/bin/bash
-# Clase para la instalación de aplicaciones del sistema
+# Clase para la instalación de FLATPAK
 #
 #source App.class.sh
 readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,6 +25,12 @@ FlatApp.new() {
   rself["org.gimp.GIMP"]="org.gimp.GIMP"
   rself["org.keepassxc.KeePassXC"]="org.keepassxc.KeePassXC"
   rself["app.zen_browser.zen"]="app.zen_browser.zen"
+  rself["org.videolan.VLC"]="org.videolan.VLC"
+  rself["org.kde.haruna"]="org.kde.haruna"
+  rself["org.kde.umbrello"]="org.kde.umbrello"
+  rself["org.kde.tokodon"]="org.kde.tokodon"
+  rself["org.kde.marknote"]="org.kde.marknote"
+  rself["org.kde.merkuro"]="org.kde.merkuro"
   FlatApp.addRepos
 }
 FlatApp.addRepos() {

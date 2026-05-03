@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==========================
-# Personalizador de Debian
+# Personalizador de Opensuse LEAP
 # ==========================
 #
 
@@ -10,10 +10,11 @@ readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$RUTA_ACTUAL/config/constantes.sh"
 source "$RUTA_ACTUAL/core/App.class.sh"
 source "$RUTA_ACTUAL/core/FlatApp.class.sh"
+source "$RUTA_ACTUAL/core/KDEApp.class.sh"
 
 # Validar que dialog esté instalado
 command -v dialog >/dev/null 2>&1 || {
-  echo "Se requiere el paquete 'dialog'. Instálalo con: sudo apt install dialog"
+  echo "Se requiere el paquete 'dialog'. Instálalo con: sudo zypper install dialog"
   exit 1
 }
 
@@ -73,6 +74,8 @@ if [[ $EUID -eq 0 ]]; then
   OPTIONS=(
 
     1 "Instalar APP" on
+    2 "Instalar KDE" on
+    3 "Instalar Packman" off
     6 "Instalar FLATPAK" on
     7 "Crear Subvolumenes" off
   )
@@ -91,7 +94,7 @@ fi
 
 # Mostrar el checklist según la selección
 CHOICES=$(dialog --clear \
-  --backtitle "Personalizador de UBUNTU ($UBUNTU_BRANCH)" \
+  --backtitle "Personalizador de OpenSuse LEAP ($UBUNTU_BRANCH)" \
   --title "Opciones de instalación para $UBUNTU_BRANCH" \
   --checklist "Selecciona lo que deseas instalar:" \
   20 60 10 \
@@ -116,6 +119,15 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     App.new BASE
     App.installApps BASE
     ;;
+  "ROOT-2")
+    echo "Instalando KDE..."
+    KDEApp.new KDE
+    KDEApp.installApps KDE
+    ;;
+   "ROOT-3")
+    echo "Instalando Repositorios.."
+    core/zgh_install_packman.sh
+    ;;
   "ROOT-6")
     echo "Instalando FLAT APPS..."
     FlatApp.new FL
@@ -125,7 +137,6 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     echo "Creando Subvolúmenes..."
     core/zgh_install_subvolumenes.sh
     core/zgh_install_snapper_config.sh
-    # core/crear_subvols.sh
     ;;
   *)
     echo "Opción no reconocida: $CHOICE"
