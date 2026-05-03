@@ -15,6 +15,7 @@ OPTIONS="defaults"
 
 # Lista de subvolúmenes (limpiamos posibles espacios o caracteres ocultos)
 SUBVOLUMES=(
+    "home/$MAIN_USER/.local/share/distrobox"
     "home/$MAIN_USER/.local/share/flatpak"
     "/var/lib/flatpak"
 )
