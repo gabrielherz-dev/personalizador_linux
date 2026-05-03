@@ -20,7 +20,7 @@ KDEApp.new() {
   ref["kmail"]="kmail --version"
   ref["marknotes"]="marknotes --version"
   ref["akregator"]="akregator --version"
-  ref["yast2"]="yast2 --version"
+#  ref["yast2"]="yast2 --version"
 }
 
 
