@@ -134,7 +134,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
     FlatApp.installApps FL
     ;;
   "ROOT-7")
-    echo "Creando Subvolúmenes..."
+    echo "Creando Subvolúmenes Flatpak..."
     core/zgh_install_subvolumenes.sh
     core/zgh_install_snapper_config.sh
     ;;
