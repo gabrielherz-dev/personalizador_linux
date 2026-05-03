@@ -122,6 +122,7 @@ for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
   "ROOT-2")
     echo "Instalando KDE..."
     KDEApp.new KDE
+    KDEApp.installConfig KDE
     KDEApp.installApps KDE
     ;;
    "ROOT-3")

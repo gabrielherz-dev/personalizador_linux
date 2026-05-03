@@ -16,7 +16,7 @@ OPTIONS="defaults"
 # Lista de subvolúmenes (limpiamos posibles espacios o caracteres ocultos)
 SUBVOLUMES=(
     "home/$MAIN_USER/.local/share/flatpak"
-    "home/$MAIN_USER/var/lib/flatpak"
+    "/var/lib/flatpak"
 )
 
 echo "🛠️ Limpiando entradas previas fallidas en /etc/fstab..."

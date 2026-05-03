@@ -10,7 +10,7 @@ fi
 # Formato: "NombreConfig:Ruta"
 FLATPAK_PATHS=(
     "flatpak_user:/home/gherz/.local/share/flatpak"
-    "flatpak_system:/home/gherz/var/lib/flatpak"
+    "flatpak_system:/var/lib/flatpak"
 )
 
 for item in "${FLATPAK_PATHS[@]}"; do

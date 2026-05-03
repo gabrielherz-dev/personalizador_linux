@@ -31,6 +31,7 @@ FlatApp.new() {
   rself["org.kde.tokodon"]="org.kde.tokodon"
   rself["org.kde.marknote"]="org.kde.marknote"
   rself["org.kde.merkuro"]="org.kde.merkuro"
+  rself["org.wezfurlong.wezterm"]="org.wezfurlong.wezterm"
   FlatApp.addRepos
 }
 FlatApp.addRepos() {
