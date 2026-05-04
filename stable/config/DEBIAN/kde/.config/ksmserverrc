@@ -1,5 +1,5 @@
-[$Version]
-update_info=ksmserver_update_loginMode_value.upd:ksmserver_update_loginMode_value_default_enum
+[LegacySession: saved at previous logout]
+count=0
 
-[General]
-loginMode=emptySession
+[Session: saved at previous logout]
+count=0
