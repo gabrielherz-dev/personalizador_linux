@@ -1,159 +1,73 @@
 #!/bin/bash
 
 # ==========================
-# Personalizador de Debian 13
+# Personalizador de Fedora Kinoite
 # ==========================
-#
 
 readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Importar clases y scripts  debian stable
-source "$RUTA_ACTUAL/config/constantes.sh"
-# Importar clases y scripts  debian stable
-source "$RUTA_ACTUAL/stable/App.class.sh"
-source "$RUTA_ACTUAL/stable/FlatApp.class.sh"
-source "$RUTA_ACTUAL/stable/KDESApp.class.sh"
 
-# Validar que dialog esté instalado
-command -v dialog >/dev/null 2>&1 || {
-  echo "Se requiere el paquete 'dialog'. Instálalo con: sudo apt install dialog"
+# Importar clases y scripts (Asegúrate de que estas rutas existan)
+source "$RUTA_ACTUAL/config/constantes.sh"
+source "$RUTA_ACTUAL/core/FlatApp.class.sh"
+
+# Validar que kdialog esté instalado
+command -v kdialog >/dev/null 2>&1 || {
+  echo "Se requiere el paquete 'kdialog'. Instálalo con: rpm-ostree install kdialog"
   exit 1
 }
 
-# Copiar .dialogrc si existe
-DIALOGRC_ORIG="$RUTA_ORIGEN/config/.dialogrc"
-DIALOGRC_DEST="$HOME/.config/.dialogrc"
-mkdir -p "$HOME/.config"
+# Opciones para kdialog (ID, Texto, Estado)
+# NOTA: Ajusté los números para que coincidan con tu ciclo 'case' de abajo.
+OPTIONS=(
+  "1" "Instalar Paquetes Ostree" "on"
+  "2" "Instalar Nvim/LazzyVim" "off"
+  "3" "Instalar Wallpapers" "off"
+  "4" "Instalar Apps FLATPAK" "on"
+)
 
-if [[ -f "$DIALOGRC_ORIG" ]]; then
-  cp "$DIALOGRC_ORIG" "$DIALOGRC_DEST"
-  export DIALOGRC="$DIALOGRC_DEST"
-else
-  echo "Advertencia: config/.dialogrc no encontrado, usando configuración por defecto."
-fi
-
-# Permitir que el usuario elija entre stable o testing
-DEBIAN_BRANCH=$(dialog --clear \
-  --backtitle "Selector de personalización de Debian 13" \
-  --title "¿Qué versión de personalización quieres usar?" \
-  --menu "Selecciona tu versión para personalizar las opciones de instalación:" \
-  15 50 2 \
-  stable "Versión STABLE" \
-  testing "Versión testing y STABLE" \
-  3>&1 1>&2 2>&3)
-
-# Cancelado o error
-if [ $? -ne 0 ]; then
-  clear
-  echo "Operación cancelada."
-  exit 1
-fi
-
-# Elegir Tema
-THEME_SELECTED=$(dialog --clear \
-  --backtitle "Selector de personalización de Debian" \
-  --title "¿Cuál tema deseas usar?" \
-  --menu "Selecciona el tema :" \
-  15 50 2 \
-  DEBIAN "DEBIAN" \
-  THINKPAD "THINKPAD" \
-  3>&1 1>&2 2>&3)
-
-# Opciones según la versión seleccionada
-if [[ "$DEBIAN_BRANCH" == "stable" ]]; then
-  OPTIONS=(
-    1 "Instalar APP" on
-    2 "Instalar GRUB" on 
-    3 "Instalar KDE" off
-    4 "Instalar LazzyVim" off
-    5 "Instalar RANGER" off
-    6 "Instalar Wezterm" off
-    7 "Instalar FLATPAK" on
-    8 "Crear Subvolumenes" off
-    9 "Instalar perfiles AppArmour" off
-  )
-else
-  # Se verifica que se tengan los pivilegios de root
-  if [[ $EUID -ne 0 ]]; then
-    echo "Este script necesita privilegios de superusuario."
-    exit 1
-  fi
-  # Actualizar antes de proceder a instalar aplicaciones
-  apt update
-  apt upgrade
-  #OPTIONS=(
-  #)
-fi
-
-# Mostrar el checklist según la selección
-CHOICES=$(dialog --clear \
-  --backtitle "Personalizador de Debian ($DEBIAN_BRANCH)" \
-  --title "Opciones de instalación para $DEBIAN_BRANCH" \
+# Mostrar el checklist con kdialog
+# --separate-output devuelve una lista limpia de IDs seleccionados
+CHOICES=$(kdialog --title "Personalizador de KINOITE" \
   --checklist "Selecciona lo que deseas instalar:" \
-  20 60 10 \
   "${OPTIONS[@]}" \
-  3>&1 1>&2 2>&3)
+  --separate-output)
+
+# Validar si el usuario presionó "Cancelar" o cerró la ventana
+if [ $? -ne 0 ]; then
+  echo "Instalación cancelada por el usuario."
+  exit 0
+fi
 
 clear
 
 # Ejecutar acciones según las elecciones
-for CHOICE in $(echo "$CHOICES" | sed 's/"//g'); do
-  case "$DEBIAN_BRANCH-$CHOICE" in
-    "stable-1")
-      echo "Instalando Comandos Base..."
-      App.new BASE
-      App.installApps BASE
+# kdialog con --separate-output devuelve los valores separados por saltos de línea,
+# por lo que no es necesario usar 'sed' para quitar comillas.
+for CHOICE in $CHOICES; do
+  case "$CHOICE" in
+    "1")
+      echo "Instalando Paquetes Ostree..."
+      "$RUTA_ACTUAL/core/install_ostree_app.sh"
       ;;
-    "stable-2")
-      echo "Instalando Tema de GRUB..."
-      stable/install_grub_theme.sh "$THEME_SELECTED"
-      stable/install_fuente_grub_tty.sh
-      ;;  
-    "stable-3")
-      echo "Instalando KDE..."
-      KDESApp.new KDESTABLE
-      KDESApp.installApps KDESTABLE THEME_SELECTED
-      ;;
-    "stable-4")
+    "2")
       echo "Instalando Nvim/LazzyVim..."
-      stable/install_nvim_src.sh
-      stable/install_lazzyvim.sh
+      "$RUTA_ACTUAL/core/install_lazzyvim.sh"
       ;;
-    "stable-5")
-      echo "Instalando tema RANGER..."
-      cp -r "$RUTA_ORIGEN/config/ranger" "$HOME/.config"
+    "3")
+      echo "Instalando Wallpapers..."
+      mkdir -p "$HOME/.local/share/wallpapers"
+      cp -r "$RUTA_ACTUAL/config/wallpapers/"* "$HOME/.local/share/wallpapers"
       ;;
-    "stable-6")
-      echo "Instalando Wezterm..."
-      stable/install_wezterm.sh
-      mkdir -p "$HOME/.config/wezterm"
-      cp -r "$RUTA_ORIGEN/config/wezterm" "$HOME/.config"
-      ;;
-    "stable-7")
-      echo "Instalando FLAT APPS..."
+    "4")
+      echo "Instalando FLATPAK APPS..."
       FlatApp.new FL
       FlatApp.installApps FL
       ;;
-    "stable-8")
-      echo "Creando Subvolúmenes..."
-      stable/install_subvolumenes_debian.sh
-      stable/config_snapper.sh
-      stable/config_grub_btrfs.sh
+    *)
+      echo "Opción no reconocida: $CHOICE"
       ;;
-    "stable-9")
-      echo "Instalando perfiles AppArmor..."
-      stable/seguridad/crear_perfiles_apparmor.sh
-      # sudo apt install apparmor-profiles apparmor-utils
-      ;;
-
-  *)
-    echo "Opción no reconocida: $CHOICE"
-    ;;
   esac
 done
 
-# Cambiando los permisos en el directorio del usuario
-chown -R gherz:gherz /home/gherz
-find /home/gherz -type d -exec chmod 755 {} +
-find /home/gherz -type f -exec chmod 644 {} +
-
-echo "Personalización completada para Debian $DEBIAN_BRANCH"
+# En lugar de un 'echo' en la terminal, lanzamos un mensaje gráfico final
+kdialog --msgbox "Personalización completada para KINOITE" --title "Éxito"

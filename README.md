@@ -1,2 +1,5 @@
 # personalizador_linux
-Aplicación por terminal para instalar componentes en debian/ubuntu, incluyendo creación de subvolumenes y perfiles AppArmor
+Aplicación por terminal para instalar componentes en Fedora KINOITE
+- Apps base
+- Apps FLATPAK
+

@@ -1,5 +1,3 @@
-readonly THINKPAD_THEME="THINKPAD"
-readonly DEBIAN_THEME="DEBIAN"
 readonly LOG_INSTALLATION="installation.log"
 #directorio donde se guardará la configuración del entorno de escritorio
 readonly TARGET_USER="$(logname)"
