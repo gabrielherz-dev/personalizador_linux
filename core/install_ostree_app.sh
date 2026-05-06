@@ -13,6 +13,7 @@ rpm-ostree upgrade
 # Editor, gestor de ficheros y directorios, gestor de claves públicas y certificados digitales
 # También se instala quemu, su gestor de redes, etc y zsh además de fish
 # VPNs PROTON, WIREGUARD, FORTI, etc
+# gh github client
 rpm-ostree install \
   neovim \
   ranger \
@@ -42,5 +43,6 @@ rpm-ostree install \
   NetworkManager-fortisslvpn \
   NetworkManager-l2tp \
   wireguard-tools \
-  openconnect
+  openconnect \
+  gh
 
