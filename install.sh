@@ -20,9 +20,9 @@ command -v kdialog >/dev/null 2>&1 || {
 # NOTA: Ajusté los números para que coincidan con tu ciclo 'case' de abajo.
 OPTIONS=(
   "1" "Instalar Paquetes Ostree" "on"
-  "2" "Instalar Nvim/LazzyVim" "off"
+  "2" "Instalar Nvim/LazzyVim" "on"
   "3" "Instalar Wallpapers" "off"
-  "4" "Instalar Apps FLATPAK" "on"
+  "4" "Instalar Apps FLATPAK y VSCODE/Entorno dev" "off"
 )
 
 # Mostrar el checklist con kdialog
@@ -62,6 +62,8 @@ for CHOICE in $CHOICES; do
       echo "Instalando FLATPAK APPS..."
       FlatApp.new FL
       FlatApp.installApps FL
+      echo "Instalando entorno de desarrollo toolbx para VSCODE de FLATPAK"
+      "$RUTA_ACTUAL/core/install_contenedor_dev_toolbx.sh"
       ;;
     *)
       echo "Opción no reconocida: $CHOICE"

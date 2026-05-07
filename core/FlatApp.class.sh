@@ -17,6 +17,8 @@ FlatApp.new() {
   declare -n rself="$self"
   #Borro los atributos de mi clase padre, solo me interesan los de esta clase hija
   unset self
+  rself["com.visualstudio.code"]="com.visualstudio.code"
+  rself["org.eclipse.Java"]="org.eclipse.Java"
   rself["org.wezfurlong.wezterm"]="org.wezfurlong.wezterm"
   rself["com.brave.Browser"]="com.brave.Browser"
   rself["md.obsidian.Obsidian"]="md.obsidian.Obsidian"

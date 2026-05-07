@@ -14,6 +14,8 @@ rpm-ostree upgrade
 # También se instala quemu, su gestor de redes, etc y zsh además de fish
 # VPNs PROTON, WIREGUARD, FORTI, etc
 # gh github client
+# para github : gh (CLI  y automatización github),runner local = act, API parsing json y yaml ?jq yq ,  
+# para gitlab: glab
 rpm-ostree install \
   neovim \
   ranger \
@@ -44,5 +46,9 @@ rpm-ostree install \
   NetworkManager-l2tp \
   wireguard-tools \
   openconnect \
-  gh
+  gh \
+  jq \
+  yq \
+  act \
+  glab \
 
