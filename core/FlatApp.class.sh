@@ -34,6 +34,7 @@ FlatApp.new() {
   rself["akregator"]="akregator --version"
   rself["org.kde.kate"]="org.kde.kate"
   rself["org.gnome.Boxes"]="org.gnome.Boxes"
+  rself["com.github.tchx84.Flatseal"]="com.github.tchx84.Flatseal"
   FlatApp.addRepos
 }
 FlatApp.addRepos() {
