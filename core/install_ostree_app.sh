@@ -32,7 +32,6 @@ PAQUETES=(
   libvirt-daemon-config-network
   zsh
   fish
-  util-linux-user
   dialog
   gum
   snapper
