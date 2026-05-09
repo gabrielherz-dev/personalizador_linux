@@ -114,6 +114,10 @@ sudo systemctl enable --now crowdsec-firewall-bouncer.service
 
 echo
 echo "=================================================="
-echo " CrowdSec instalado y funcionando"
+echo " CrowdSec instalado correctamente"
 echo "=================================================="
-sudo podman exec crowdsec cscli status
+echo "[INFO] Estadísticas del motor:"
+sudo podman exec crowdsec cscli metrics
+echo
+echo "[INFO] Bouncers conectados:"
+sudo podman exec crowdsec cscli bouncers list
