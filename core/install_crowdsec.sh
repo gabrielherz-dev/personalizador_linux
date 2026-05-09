@@ -2,12 +2,6 @@
 # ============================================================
 # CrowdSec + Firewall Bouncer en Fedora Kinoite/Silverblue
 # usando Toolbox + Podman
-#
-# Objetivo:
-# - Misma funcionalidad que instalación directa OSTree
-# - Compatible con sistemas Atomic
-# - Persistencia correcta
-# - Integración con nftables/firewalld del host
 # ============================================================
 
 set -euo pipefail
@@ -41,6 +35,9 @@ echo "[OK] Entorno validado."
 # ============================================================
 # CREAR TOOLBOX SI NO EXISTE
 # ============================================================
+# Nota: Si el objetivo de CrowdSec es correr 100% como un servicio
+# Podman rootful, el entorno Toolbox no se está utilizando realmente
+# para este servicio y podría omitirse. Lo mantenemos según tu diseño.
 
 if toolbox list | grep -q "^${TOOLBOX_NAME} "; then
     echo "[OK] Toolbox '${TOOLBOX_NAME}' ya existe."
@@ -98,8 +95,9 @@ fi
 # PODMAN CONTAINER
 # ============================================================
 
-if podman container exists crowdsec; then
-    echo "[OK] Contenedor crowdsec ya existe."
+# CORRECCIÓN AQUÍ: Se añade 'sudo' para verificar el contenedor rootful
+if sudo podman container exists crowdsec; then
+    echo "[OK] Contenedor crowdsec rootful ya existe."
 else
     echo "[INFO] Creando contenedor CrowdSec..."
 
@@ -202,4 +200,3 @@ echo "  sudo podman exec crowdsec cscli status"
 echo
 echo "Decisiones:"
 echo "  sudo podman exec crowdsec cscli decisions list"
-echo
