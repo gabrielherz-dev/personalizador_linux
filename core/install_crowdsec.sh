@@ -12,6 +12,7 @@
 
 set -euo pipefail
 
+readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly RUTA_LOG="$RUTA_ACTUAL/../LOG"
 TOOLBOX_NAME="crowdsec"
 CONTAINER_IMAGE="docker.io/crowdsecurity/crowdsec:latest"
