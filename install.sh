@@ -23,6 +23,7 @@ OPTIONS=(
   "2" "Instalar Nvim/LazzyVim" "on"
   "3" "Instalar Wallpapers" "off"
   "4" "Instalar Apps FLATPAK y VSCODE/Entorno dev" "off"
+  "5" "Instalar Crowdsec" "on"
 )
 
 # Mostrar el checklist con kdialog
@@ -64,6 +65,11 @@ for CHOICE in $CHOICES; do
       FlatApp.installApps FL
       echo "Instalando entorno de desarrollo toolbx para VSCODE de FLATPAK"
       "$RUTA_ACTUAL/core/install_contenedor_dev_toolbx.sh"
+      ;;
+     "5")
+      echo "Instalando Crowdsec..."
+      "$RUTA_ACTUAL/core/install_crowdsec.sh"
+
       ;;
     *)
       echo "Opción no reconocida: $CHOICE"

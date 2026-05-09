@@ -1,108 +1,112 @@
 #!/usr/bin/env bash
 # INSTALACIÓN DE LAS APLICACIONES BASE PARA EL ENTORNO INMUTABLE CON OSTREE
 
-set -euo pipefail
+set -uo pipefail
 
 readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly RUTA_LOG="$RUTA_ACTUAL/../LOG"
+
 source "$RUTA_ACTUAL/../config/constantes.sh"
 
-CROWDSEC_REPO="/etc/yum.repos.d/crowdsec_crowdsec.repo"
-CROWDSEC_REPO_URL="https://packagecloud.io/install/repositories/crowdsec/crowdsec/config_file.repo?os=fedora&dist=44"
+LOG_ERRORES="${RUTA_LOG}/rpm-ostree-install-errors.log"
 
-# Detectar si estamos en Fedora Atomic/Kinoite/Silverblue
-if ! command -v rpm-ostree &>/dev/null; then
-    echo "Este script requiere rpm-ostree."
-    exit 1
-fi
+# Limpia log anterior
+: > "$LOG_ERRORES"
 
-REQUIERE_REINICIO=0
+# Actualiza metadatos/base
+rpm-ostree upgrade
 
-# ============================================================
-# CROWDSEC REPOSITORY
-# ============================================================
+# Lista de paquetes
+PAQUETES=(
+  gnupg2
+  gnupg2-utils
+  neovim
+  ranger
+  ca-certificates
+  distrobox
+  git
+  wl-clipboard
+  qemu-kvm
+  libvirt
+  virt-manager
+  virt-viewer
+  edk2-ovmf
+  libvirt-daemon-config-network
+  zsh
+  fish
+  util-linux-user
+  dialog
+  gum
+  snapper
+  rclone
+  restic
+  NetworkManager-openvpn-gnome
+  NetworkManager-fortisslvpn
+  NetworkManager-l2tp
+  wireguard-tools
+  openconnect
+  gh
+  jq
+  yq
+  act
+  glab
+)
 
-if [[ -f "$CROWDSEC_REPO" ]]; then
-    echo "[OK] Repositorio de CrowdSec ya presente."
-else
-    echo "[INFO] Agregando repositorio de CrowdSec..."
+echo "================================================="
+echo "Verificando paquetes disponibles..."
+echo "================================================="
 
-    sudo curl -fsSL \
-        -o "$CROWDSEC_REPO" \
-        "$CROWDSEC_REPO_URL"
+PAQUETES_VALIDOS=()
+PAQUETES_FALLIDOS=()
 
-    echo "[OK] Repo CrowdSec agregado."
+for paquete in "${PAQUETES[@]}"; do
+    echo -n "Comprobando ${paquete}... "
 
-    REQUIERE_REINICIO=1
-fi
-
-# ============================================================
-# SI SE AGREGÓ EL REPO -> ACTUALIZAR METADATOS Y REINICIAR
-# ============================================================
-
-if [[ "$REQUIERE_REINICIO" -eq 1 ]]; then
-    echo "[INFO] Actualizando metadata OSTree..."
-
-    sudo rpm-ostree upgrade
-
-    MENSAJE="Se agregó el repositorio de CrowdSec.\n\nDebes reiniciar el sistema antes de continuar con la instalación de paquetes OSTree."
-
-    if command -v kdialog &>/dev/null; then
-        kdialog --title "Reinicio requerido" --msgbox "$MENSAJE"
-    else
-        echo -e "$MENSAJE"
+    if rpm -q "$paquete" &>/dev/null; then
+        echo "ya instalado"
+        continue
     fi
 
-    exit 0
+    if rpm-ostree search "$paquete" &>/dev/null; then
+        echo "OK"
+        PAQUETES_VALIDOS+=("$paquete")
+    else
+        echo "FALLO"
+        PAQUETES_FALLIDOS+=("$paquete")
+
+        {
+          echo "[$(date '+%Y-%m-%d %H:%M:%S')]"
+          echo "Paquete no encontrado o inválido: $paquete"
+          echo "--------------------------------------------"
+        } >> "$LOG_ERRORES"
+    fi
+done
+
+echo
+echo "================================================="
+echo "Instalando paquetes válidos..."
+echo "================================================="
+
+if [ ${#PAQUETES_VALIDOS[@]} -gt 0 ]; then
+    rpm-ostree install "${PAQUETES_VALIDOS[@]}"
+else
+    echo "No hay paquetes válidos para instalar."
 fi
 
-# ============================================================
-# INSTALACIÓN DE PAQUETES
-# ============================================================
+echo
+echo "================================================="
+echo "Resumen"
+echo "================================================="
 
-sudo rpm-ostree install \
-  neovim \
-  ranger \
-  gnupg2 \
-  gnupg2-utils \
-  ca-certificates \
-  distrobox \
-  git \
-  wl-clipboard \
-  qemu-kvm \
-  libvirt \
-  virt-manager \
-  virt-viewer \
-  edk2-ovmf \
-  libvirt-daemon-config-network \
-  zsh \
-  fish \
-  util-linux-user \
-  crowdsec \
-  crowdsec-firewall-bouncer-nftables \
-  dialog \
-  gum \
-  snapper \
-  rclone \
-  restic \
-  NetworkManager-openvpn-gnome \
-  NetworkManager-fortisslvpn \
-  NetworkManager-l2tp \
-  wireguard-tools \
-  openconnect \
-  gh \
-  jq \
-  yq \
-  act \
-  glab
+echo "Paquetes válidos: ${#PAQUETES_VALIDOS[@]}"
+echo "Paquetes fallidos: ${#PAQUETES_FALLIDOS[@]}"
 
-# ============================================================
-# FINAL
-# ============================================================
+if [ ${#PAQUETES_FALLIDOS[@]} -gt 0 ]; then
+    echo
+    echo "Paquetes con error:"
+    printf ' - %s\n' "${PAQUETES_FALLIDOS[@]}"
 
-MENSAJE_FINAL="La instalación OSTree finalizó.\n\nDebes reiniciar el sistema para aplicar los cambios."
-
-if command -v kdialog &>/dev/null; then
-    kdialog --title "Reinicio requerido" --msgbox "$MENSAJE_FINAL"
-else
-    echo -e "$MENSAJE_FINAL"
+    echo
+    echo "Log de errores:"
+    echo "$LOG_ERRORES"
 fi

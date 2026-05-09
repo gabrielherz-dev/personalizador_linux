@@ -3,6 +3,7 @@
 #
 #source App.class.sh
 readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly RUTA_LOG="$RUTA_ACTUAL/../LOG"
 source "$RUTA_ACTUAL/../config/constantes.sh"
 
 declare -A FlatApp
