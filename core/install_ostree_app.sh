@@ -85,9 +85,36 @@ echo "Instalando paquetes válidos..."
 echo "================================================="
 
 if [ ${#PAQUETES_VALIDOS[@]} -gt 0 ]; then
+
     rpm-ostree install "${PAQUETES_VALIDOS[@]}"
+    INSTALL_EXIT_CODE=$?
+
+    # Verifica si la instalación fue exitosa
+    if [ $INSTALL_EXIT_CODE -eq 0 ]; then
+
+        echo
+        echo "Instalación OSTree completada correctamente."
+
+        kdialog --title "Reinicio requerido" \
+          --msgbox "Los paquetes OSTree fueron instalados correctamente.\n\nDebes reiniciar el sistema para aplicar los cambios."
+
+        systemctl reboot
+
+    else
+
+        echo
+        echo "La instalación OSTree falló."
+
+        kdialog --title "Error OSTree" \
+          --error "Ocurrió un error durante la instalación OSTree.\n\nRevisa el log:\n$LOG_ERRORES"
+
+    fi
+
 else
     echo "No hay paquetes válidos para instalar."
+
+    kdialog --title "Sin cambios" \
+      --msgbox "No hay nuevos paquetes OSTree para instalar."
 fi
 
 echo
