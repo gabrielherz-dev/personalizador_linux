@@ -13,8 +13,6 @@ LOG_ERRORES="${RUTA_LOG}/rpm-ostree-install-errors.log"
 # Limpia log anterior
 : > "$LOG_ERRORES"
 
-# Actualiza metadatos/base
-rpm-ostree upgrade
 
 # Lista de paquetes
 PAQUETES=(
