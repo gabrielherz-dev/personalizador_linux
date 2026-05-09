@@ -5,14 +5,12 @@
 
 set -euo pipefail
 
-readonly RUTA_ACTUAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly TOOLBOX_NAME="crowdsec"
 readonly CONTAINER_IMAGE="docker.io/crowdsecurity/crowdsec:latest"
 
 # ============================================================
 # VERIFICACIONES INICIALES
 # ============================================================
-
 for cmd in toolbox podman systemctl; do
     if ! command -v "$cmd" &>/dev/null; then
         echo "[ERROR] $cmd no está instalado."
@@ -21,35 +19,39 @@ for cmd in toolbox podman systemctl; do
 done
 
 # ============================================================
-# LIMPIEZA PREVIA (RESET)
+# LIMPIEZA TOTAL (ROOTLESS Y ROOTFUL)
 # ============================================================
 echo "[INFO] Limpiando instalaciones anteriores..."
 
-# Detener y eliminar servicio del bouncer si existe
+# 1. Detener servicios bouncer
 sudo systemctl disable --now crowdsec-firewall-bouncer.service 2>/dev/null || true
 sudo rm -f /etc/systemd/system/crowdsec-firewall-bouncer.service
 
-# Eliminar contenedor rootful de CrowdSec si existe
+# 2. Eliminar contenedor de TOOLBOX (rootless / tu usuario)
+# Esto soluciona el error "container crowdsec already exists" de la imagen
+if podman container exists "$TOOLBOX_NAME"; then
+    echo "[INFO] Eliminando contenedor Toolbox (user)..."
+    podman rm -f "$TOOLBOX_NAME"
+fi
+
+# 3. Eliminar contenedor de CROWDSEC (rootful / sudo)
 if sudo podman container exists crowdsec; then
-    echo "[INFO] Eliminando contenedor 'crowdsec' existente..."
+    echo "[INFO] Eliminando contenedor CrowdSec (root)..."
     sudo podman rm -f crowdsec
 fi
 
-# Eliminar directorios de configuración para empezar de cero
+# 4. Limpiar directorios
 sudo rm -rf /var/lib/crowdsec /etc/crowdsec
 sudo mkdir -p /var/lib/crowdsec /etc/crowdsec
 
 echo "[OK] Limpieza completada."
 
 # ============================================================
-# CREAR TOOLBOX (OPCIONAL/ENTORNO)
+# CREAR TOOLBOX
 # ============================================================
-if toolbox list | grep -q "^${TOOLBOX_NAME} "; then
-    echo "[OK] Toolbox '${TOOLBOX_NAME}' ya existe."
-else
-    echo "[INFO] Creando toolbox '${TOOLBOX_NAME}'..."
-    toolbox create -y "${TOOLBOX_NAME}"
-fi
+# Usamos -y para evitar prompts interactivos
+echo "[INFO] Creando nuevo toolbox '${TOOLBOX_NAME}'..."
+toolbox create -y "${TOOLBOX_NAME}"
 
 # ============================================================
 # FIREWALL (FIREWALLD / NFTABLES)
@@ -58,13 +60,10 @@ echo "[INFO] Configurando firewalld..."
 
 sudo systemctl enable --now firewalld
 
-# Limpiar ipset previo si existe y crear uno nuevo
+# Limpiar ipset previo
 sudo firewall-cmd --permanent --delete-ipset=crowdsec-blacklists 2>/dev/null || true
 sudo firewall-cmd --permanent --new-ipset=crowdsec-blacklists --type=hash:ip || true
-
-sudo firewall-cmd --permanent \
-  --add-rich-rule='rule source ipset="crowdsec-blacklists" drop' || true
-
+sudo firewall-cmd --permanent --add-rich-rule='rule source ipset="crowdsec-blacklists" drop' || true
 sudo firewall-cmd --reload
 
 # ============================================================
@@ -105,7 +104,7 @@ sudo podman run -d \
   -v /etc/crowdsec:/etc/crowdsec \
   "${CONTAINER_IMAGE}"
 
-echo "[INFO] Esperando a que el motor arranque..."
+echo "[INFO] Esperando inicialización (15s)..."
 sleep 15
 
 # ============================================================
@@ -113,7 +112,7 @@ sleep 15
 # ============================================================
 echo "[INFO] Configurando Firewall Bouncer..."
 
-# Generar la API Key
+# Obtener API Key
 BOUNCER_KEY=$(sudo podman exec crowdsec cscli bouncers add firewall-bouncer -o raw)
 
 sudo tee /etc/crowdsec/bouncer.yaml >/dev/null <<EOF
@@ -129,7 +128,7 @@ nftables:
     set-only: false
 EOF
 
-# Crear y activar servicio del bouncer
+# Crear servicio systemd
 sudo tee /etc/systemd/system/crowdsec-firewall-bouncer.service >/dev/null <<'EOF'
 [Unit]
 Description=CrowdSec Firewall Bouncer
@@ -154,6 +153,6 @@ echo "[INFO] Instalando colecciones..."
 sudo podman exec crowdsec cscli collections install crowdsecurity/linux crowdsecurity/sshd
 
 echo "------------------------------------------------------------"
-echo " ¡CrowdSec se ha reinstalado correctamente! "
+echo " ¡Reinstalación completada con éxito! "
 echo "------------------------------------------------------------"
 sudo podman exec crowdsec cscli status
