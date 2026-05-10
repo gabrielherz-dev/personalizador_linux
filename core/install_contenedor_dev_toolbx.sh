@@ -44,7 +44,8 @@ toolbox run -c "$TOOLBOX_NAME" sudo dnf install -y \
     java-21-openjdk-devel \
     openssl-devel zlib-devel \
     sqlite-devel \
-    podman-buildah \
+    podman \
+    buildah \
     tar gzip bzip2 unzip xz \
     which findutils diffutils patch \
     procps-ng hostname iproute \

@@ -98,15 +98,22 @@ echo "[INFO] Configurando servicio systemd para el bouncer..."
 sudo tee /etc/systemd/system/crowdsec-firewall-bouncer.service >/dev/null <<'EOF'
 [Unit]
 Description=CrowdSec Firewall Bouncer
-After=network.target firewalld.service
+# Solo arranca cuando el sistema gráfico ya está listo
+After=graphical.target network-online.target firewalld.service
+Wants=network-online.target
 
 [Service]
-ExecStart=/usr/bin/podman exec crowdsec cs-firewall-bouncer -c /etc/crowdsec/bouncer.yaml
+Type=simple
+# El secreto: un pequeño retraso para que Podman estabilice el contenedor
+ExecStartPre=/usr/bin/sleep 15
+# Comprobamos que el contenedor existe antes de lanzar el exec
+ExecStart=/usr/bin/bash -c "/usr/bin/podman ps -q -f name=crowdsec | grep . && /usr/bin/podman exec crowdsec cs-firewall-bouncer -c /etc/crowdsec/bouncer.yaml"
 Restart=always
-RestartSec=10
+RestartSec=30
 
 [Install]
-WantedBy=multi-user.target
+# Cambiamos multi-user.target por graphical.target
+WantedBy=graphical.target
 EOF
 
 sudo systemctl daemon-reload
