@@ -5,7 +5,8 @@ set -Eeuo pipefail
 readonly CONTAINER_NAME="crowdsec"
 readonly BOUNCER_CONTAINER_NAME="crowdsec-firewall-bouncer"
 readonly CONTAINER_IMAGE="docker.io/crowdsecurity/crowdsec:latest"
-readonly BOUNCER_IMAGE="docker.io/crowdsecurity/firewall-bouncer:latest"
+# Usamos una imagen comunitaria confiable ya que CrowdSec no publica una oficial standalone
+readonly BOUNCER_IMAGE="ghcr.io/shgew/cs-firewall-bouncer-docker:latest"
 
 echo "[INFO] =================================================="
 echo "[INFO] CrowdSec & Firewall Bouncer Installer (Kinoite)"
@@ -16,32 +17,27 @@ echo "[INFO] =================================================="
 # ============================================================
 echo "[INFO] Limpiando instalación previa..."
 
-# Detener servicio antiguo si existe
 sudo systemctl stop crowdsec-firewall-bouncer.service 2>/dev/null || true
 sudo systemctl disable crowdsec-firewall-bouncer.service 2>/dev/null || true
 sudo rm -f /etc/systemd/system/crowdsec-firewall-bouncer.service
 sudo systemctl daemon-reload
 sudo systemctl reset-failed
 
-# Eliminar contenedores previos
 sudo podman rm -f "${CONTAINER_NAME}" 2>/dev/null || true
 sudo podman rm -f "${BOUNCER_CONTAINER_NAME}" 2>/dev/null || true
 
-# Limpiar reglas manuales de firewalld (ya no son necesarias, el bouncer usa nftables directo)
 sudo firewall-cmd --permanent --remove-rich-rule='rule source ipset="crowdsec-blacklists" drop' 2>/dev/null || true
 sudo firewall-cmd --permanent --delete-ipset=crowdsec-blacklists 2>/dev/null || true
 sudo firewall-cmd --reload || true
 
-# Limpiar archivos viejos
 sudo rm -rf /var/lib/crowdsec
 sudo rm -f /etc/crowdsec-acquis.yaml
 sudo rm -f /etc/crowdsec-bouncer.yaml
 
-# Crear el directorio correcto para la base de datos
 sudo mkdir -p /var/lib/crowdsec/data
 
 # ============================================================
-# ACQUIS.YAML (Solo Journald para Kinoite)
+# ACQUIS.YAML
 # ============================================================
 echo "[INFO] Creando acquis.yaml..."
 
@@ -56,7 +52,7 @@ EOF
 # ============================================================
 # DESCARGAR IMÁGENES
 # ============================================================
-echo "[INFO] Descargando imágenes de CrowdSec..."
+echo "[INFO] Descargando imágenes..."
 
 sudo podman pull "${CONTAINER_IMAGE}"
 sudo podman pull "${BOUNCER_IMAGE}"
@@ -135,7 +131,7 @@ nftables:
 EOF
 
 # ============================================================
-# CONTENEDOR DEL BOUNCER (Sustituye al servicio systemd)
+# CONTENEDOR DEL BOUNCER
 # ============================================================
 echo "[INFO] Lanzando contenedor del Firewall Bouncer..."
 
@@ -146,8 +142,7 @@ sudo podman run -d \
   --cap-add NET_ADMIN \
   --cap-add NET_RAW \
   --security-opt label=disable \
-  -v /lib/modules:/lib/modules:ro \
-  -v /etc/crowdsec-bouncer.yaml:/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml:ro \
+  -v /etc/crowdsec-bouncer.yaml:/config/crowdsec-firewall-bouncer.yaml:ro \
   "${BOUNCER_IMAGE}"
 
 # ============================================================
