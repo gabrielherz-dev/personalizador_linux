@@ -3,27 +3,36 @@
 set -Eeuo pipefail
 
 readonly CONTAINER_IMAGE="docker.io/crowdsecurity/crowdsec:latest"
+readonly BOUNCER_IMAGE="docker.io/crowdsecurity/crowdsec-bouncer-firewall:latest"
 
 echo "[INFO] Limpieza previa..."
 
-# Detener bouncer y limpiar rastro
+# Detener bouncer/servicios antiguos si existían
 sudo systemctl stop crowdsec-firewall-bouncer.service 2>/dev/null || true
 sudo systemctl disable crowdsec-firewall-bouncer.service 2>/dev/null || true
 sudo rm -f /etc/systemd/system/crowdsec-firewall-bouncer.service
 sudo systemctl daemon-reload
 
-# Eliminar contenedor
-sudo podman rm -f crowdsec 2>/dev/null || true
+# Eliminar contenedores previos
+sudo podman rm -f crowdsec crowdsec-bouncer 2>/dev/null || true
 
-# Limpiar Firewall (evitar warnings)
+# Limpiar Firewall 
 sudo firewall-cmd --permanent --remove-rich-rule='rule source ipset="crowdsec-blacklists" drop' 2>/dev/null || true
 sudo firewall-cmd --permanent --delete-ipset=crowdsec-blacklists 2>/dev/null || true
 sudo firewall-cmd --reload || true
 
-# Limpiar y PRE-CREAR estructura de directorios
+# Limpiar directorios
 sudo rm -rf /var/lib/crowdsec /etc/crowdsec
-sudo mkdir -p /var/lib/crowdsec/data  # CRÍTICO: Crear subdirectorio de datos
-sudo mkdir -p /etc/crowdsec
+
+echo "[INFO] Extrayendo configuración por defecto de CrowdSec..."
+# CRÍTICO: Sacamos los ficheros base de la imagen antes de montar el volumen vacío
+sudo podman create --name temp-cs "${CONTAINER_IMAGE}"
+sudo mkdir -p /etc/crowdsec /var/lib/crowdsec
+sudo podman cp temp-cs:/etc/crowdsec/. /etc/crowdsec/
+sudo podman cp temp-cs:/var/lib/crowdsec/. /var/lib/crowdsec/
+sudo podman rm temp-cs
+
+# Permisos para SELinux/Podman
 sudo chmod -R 755 /var/lib/crowdsec /etc/crowdsec
 
 echo "[INFO] Configurando firewalld..."
@@ -32,7 +41,7 @@ sudo firewall-cmd --permanent --new-ipset=crowdsec-blacklists --type=hash:ip
 sudo firewall-cmd --permanent --add-rich-rule='rule source ipset="crowdsec-blacklists" drop'
 sudo firewall-cmd --reload
 
-echo "[INFO] Creando acquis.yaml..."
+echo "[INFO] Creando acquis.yaml personalizado..."
 sudo tee /etc/crowdsec/acquis.yaml >/dev/null <<EOF
 filenames:
   - /var/log/secure
@@ -46,15 +55,11 @@ labels:
   type: syslog
 EOF
 
-echo "[INFO] Lanzando CrowdSec..."
-
-# Aplicando corrección SELinux y montajes
+echo "[INFO] Lanzando motor principal de CrowdSec..."
 sudo podman run -d \
   --name crowdsec \
   --restart unless-stopped \
   --network host \
-  --cap-add NET_ADMIN \
-  --cap-add NET_RAW \
   --security-opt label=disable \
   -v /var/log:/var/log:ro \
   -v /run/log/journal:/run/log/journal:ro \
@@ -63,14 +68,12 @@ sudo podman run -d \
   -v /etc/crowdsec:/etc/crowdsec:Z \
   "${CONTAINER_IMAGE}"
 
-echo "[INFO] Esperando inicialización (puede tardar por descarga de GeoIP)..."
-
-# Espera robusta: verifica si el proceso LAPI responde
+echo "[INFO] Esperando inicialización del LAPI..."
 n=0
 until sudo podman exec crowdsec cscli lapi status >/dev/null 2>&1; do
     n=$((n+1))
     if [ $n -gt 30 ]; then
-        echo "[ERROR] CrowdSec no inició a tiempo."
+        echo "[ERROR] CrowdSec no inició a tiempo. Logs:"
         sudo podman logs crowdsec
         exit 1
     fi
@@ -80,7 +83,11 @@ done
 echo "[INFO] Instalando colecciones..."
 sudo podman exec crowdsec cscli collections install crowdsecurity/linux crowdsecurity/sshd
 
-echo "[INFO] Creando bouncer..."
+# Reiniciamos para que aplique las colecciones recién instaladas
+sudo podman restart crowdsec
+sleep 3
+
+echo "[INFO] Creando token para el bouncer..."
 BOUNCER_KEY=$(sudo podman exec crowdsec cscli bouncers add firewall-bouncer -o raw)
 
 sudo tee /etc/crowdsec/bouncer.yaml >/dev/null <<EOF
@@ -94,30 +101,15 @@ nftables:
     enabled: true
 EOF
 
-echo "[INFO] Configurando servicio systemd para el bouncer..."
-sudo tee /etc/systemd/system/crowdsec-firewall-bouncer.service >/dev/null <<'EOF'
-[Unit]
-Description=CrowdSec Firewall Bouncer
-# Solo arranca cuando el sistema gráfico ya está listo
-After=graphical.target network-online.target firewalld.service
-Wants=network-online.target
-
-[Service]
-Type=simple
-# El secreto: un pequeño retraso para que Podman estabilice el contenedor
-ExecStartPre=/usr/bin/sleep 15
-# Comprobamos que el contenedor existe antes de lanzar el exec
-ExecStart=/usr/bin/bash -c "/usr/bin/podman ps -q -f name=crowdsec | grep . && /usr/bin/podman exec crowdsec cs-firewall-bouncer -c /etc/crowdsec/bouncer.yaml"
-Restart=always
-RestartSec=30
-
-[Install]
-# Cambiamos multi-user.target por graphical.target
-WantedBy=graphical.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable --now crowdsec-firewall-bouncer.service
+echo "[INFO] Lanzando contenedor dedicado para el Bouncer..."
+sudo podman run -d \
+  --name crowdsec-bouncer \
+  --restart unless-stopped \
+  --network host \
+  --cap-add NET_ADMIN \
+  --cap-add NET_RAW \
+  -v /etc/crowdsec/bouncer.yaml:/etc/crowdsec/bouncer.yaml:ro \
+  "${BOUNCER_IMAGE}"
 
 echo
 echo "=================================================="
