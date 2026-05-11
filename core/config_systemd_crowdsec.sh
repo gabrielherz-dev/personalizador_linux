@@ -2,16 +2,23 @@
 
 set -Eeuo pipefail
 
-readonly SERVICE_NAME="crowdsec.service"
-readonly SERVICE_PATH="/etc/systemd/system/${SERVICE_NAME}"
+readonly CROWDSEC_SERVICE="crowdsec.service"
+readonly BOUNCER_SERVICE="crowdsec-firewall-bouncer.service"
+
+readonly CROWDSEC_SERVICE_PATH="/etc/systemd/system/${CROWDSEC_SERVICE}"
+readonly BOUNCER_SERVICE_PATH="/etc/systemd/system/${BOUNCER_SERVICE}"
 
 echo "[INFO] =================================================="
-echo "[INFO] Configurando servicio systemd para CrowdSec"
+echo "[INFO] Configurando servicios systemd de CrowdSec"
 echo "[INFO] =================================================="
 
-echo "[INFO] Creando unidad systemd..."
+# ============================================================
+# SERVICIO CROWDSEC
+# ============================================================
 
-sudo tee "${SERVICE_PATH}" >/dev/null <<'EOF'
+echo "[INFO] Creando servicio systemd para CrowdSec..."
+
+sudo tee "${CROWDSEC_SERVICE_PATH}" >/dev/null <<'EOF'
 [Unit]
 Description=CrowdSec Container
 Wants=network-online.target
@@ -19,6 +26,7 @@ After=network-online.target firewalld.service
 
 [Service]
 Type=simple
+
 Restart=always
 RestartSec=10
 
@@ -29,27 +37,87 @@ ExecStop=/usr/bin/podman stop -t 10 crowdsec
 WantedBy=multi-user.target
 EOF
 
+# ============================================================
+# SERVICIO BOUNCER
+# ============================================================
+
+echo "[INFO] Creando servicio systemd para Firewall Bouncer..."
+
+sudo tee "${BOUNCER_SERVICE_PATH}" >/dev/null <<'EOF'
+[Unit]
+Description=CrowdSec Firewall Bouncer Container
+
+Requires=crowdsec.service
+After=crowdsec.service network-online.target firewalld.service
+
+[Service]
+Type=simple
+
+Restart=always
+RestartSec=10
+
+ExecStartPre=/usr/bin/sleep 5
+
+ExecStart=/usr/bin/podman start -a crowdsec-firewall-bouncer
+ExecStop=/usr/bin/podman stop -t 10 crowdsec-firewall-bouncer
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# ============================================================
+# SYSTEMD
+# ============================================================
+
 echo "[INFO] Recargando systemd..."
 
 sudo systemctl daemon-reload
 
-echo "[INFO] Habilitando arranque automático..."
+# ============================================================
+# ENABLE
+# ============================================================
 
-sudo systemctl enable "${SERVICE_NAME}"
+echo "[INFO] Activando CrowdSec al arranque..."
 
-echo "[INFO] Iniciando servicio..."
+sudo systemctl enable "${CROWDSEC_SERVICE}"
 
-sudo systemctl start "${SERVICE_NAME}"
+echo "[INFO] Activando Firewall Bouncer al arranque..."
+
+sudo systemctl enable "${BOUNCER_SERVICE}"
+
+# ============================================================
+# START
+# ============================================================
+
+echo "[INFO] Iniciando CrowdSec..."
+
+sudo systemctl start "${CROWDSEC_SERVICE}"
+
+echo "[INFO] Esperando estabilización..."
+
+sleep 10
+
+echo "[INFO] Iniciando Firewall Bouncer..."
+
+sudo systemctl start "${BOUNCER_SERVICE}"
+
+# ============================================================
+# VALIDACIÓN
+# ============================================================
 
 echo
 echo "=================================================="
-echo " Servicio CrowdSec configurado correctamente"
+echo " Servicios systemd configurados correctamente"
 echo "=================================================="
 echo
 
-echo "[INFO] Estado del servicio:"
-systemctl status "${SERVICE_NAME}" --no-pager
+echo "[INFO] Estado CrowdSec:"
+systemctl status "${CROWDSEC_SERVICE}" --no-pager
 
 echo
-echo "[INFO] Contenedor CrowdSec:"
+echo "[INFO] Estado Firewall Bouncer:"
+systemctl status "${BOUNCER_SERVICE}" --no-pager
+
+echo
+echo "[INFO] Contenedores activos:"
 sudo podman ps -f name=crowdsec
