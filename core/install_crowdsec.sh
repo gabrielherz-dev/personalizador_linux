@@ -6,12 +6,14 @@ readonly CONTAINER_NAME="crowdsec"
 readonly CONTAINER_IMAGE="docker.io/crowdsecurity/crowdsec:latest"
 
 echo "[INFO] =================================================="
-echo "[INFO] Limpieza previa"
+echo "[INFO] CrowdSec Installer for Fedora Kinoite"
 echo "[INFO] =================================================="
 
-# ------------------------------------------------------------
-# SYSTEMD
-# ------------------------------------------------------------
+# ============================================================
+# LIMPIEZA PREVIA
+# ============================================================
+
+echo "[INFO] Limpiando instalación previa..."
 
 sudo systemctl stop crowdsec-firewall-bouncer.service 2>/dev/null || true
 sudo systemctl disable crowdsec-firewall-bouncer.service 2>/dev/null || true
@@ -21,15 +23,7 @@ sudo rm -f /etc/systemd/system/crowdsec-firewall-bouncer.service
 sudo systemctl daemon-reload
 sudo systemctl reset-failed
 
-# ------------------------------------------------------------
-# PODMAN
-# ------------------------------------------------------------
-
 sudo podman rm -f "${CONTAINER_NAME}" 2>/dev/null || true
-
-# ------------------------------------------------------------
-# FIREWALLD
-# ------------------------------------------------------------
 
 sudo firewall-cmd --permanent \
   --remove-rich-rule='rule source ipset="crowdsec-blacklists" drop' \
@@ -41,21 +35,15 @@ sudo firewall-cmd --permanent \
 
 sudo firewall-cmd --reload || true
 
-# ------------------------------------------------------------
-# DIRECTORIOS
-# ------------------------------------------------------------
-
 sudo rm -rf /var/lib/crowdsec
-sudo rm -rf /etc/crowdsec
+sudo rm -f /etc/crowdsec-acquis.yaml
+sudo rm -f /etc/crowdsec-bouncer.yaml
 
 sudo mkdir -p /var/lib/crowdsec
-sudo mkdir -p /etc
 
-sudo chmod 755 /var/lib/crowdsec
-
-# ------------------------------------------------------------
+# ============================================================
 # FIREWALLD
-# ------------------------------------------------------------
+# ============================================================
 
 echo "[INFO] Configurando firewalld..."
 
@@ -70,9 +58,9 @@ sudo firewall-cmd --permanent \
 
 sudo firewall-cmd --reload
 
-# ------------------------------------------------------------
-# ACQUIS
-# ------------------------------------------------------------
+# ============================================================
+# ACQUIS.YAML
+# ============================================================
 
 echo "[INFO] Creando acquis.yaml..."
 
@@ -89,13 +77,19 @@ labels:
   type: syslog
 EOF
 
-# ------------------------------------------------------------
-# CONTENEDOR
-# ------------------------------------------------------------
+# ============================================================
+# DESCARGAR IMAGEN
+# ============================================================
 
-echo "[INFO] Lanzando contenedor CrowdSec..."
+echo "[INFO] Descargando imagen CrowdSec..."
 
 sudo podman pull "${CONTAINER_IMAGE}"
+
+# ============================================================
+# CONTENEDOR
+# ============================================================
+
+echo "[INFO] Lanzando contenedor CrowdSec..."
 
 sudo podman run -d \
   --name "${CONTAINER_NAME}" \
@@ -104,16 +98,16 @@ sudo podman run -d \
   --cap-add NET_ADMIN \
   --cap-add NET_RAW \
   --security-opt label=disable \
-  -v /var/log:/var/log:ro,Z \
-  -v /run/log/journal:/run/log/journal:ro,Z \
-  -v /etc/machine-id:/etc/machine-id:ro,Z \
+  -v /var/log:/var/log:ro \
+  -v /run/log/journal:/run/log/journal:ro \
+  -v /etc/machine-id:/etc/machine-id:ro \
   -v /var/lib/crowdsec:/var/lib/crowdsec:Z \
-  -v /etc/crowdsec-acquis.yaml:/etc/crowdsec/acquis.yaml:ro,Z \
+  -v /etc/crowdsec-acquis.yaml:/etc/crowdsec/acquis.yaml:ro \
   "${CONTAINER_IMAGE}"
 
-# ------------------------------------------------------------
+# ============================================================
 # ESPERA ROBUSTA
-# ------------------------------------------------------------
+# ============================================================
 
 echo "[INFO] Esperando inicialización de CrowdSec..."
 
@@ -126,32 +120,40 @@ until sudo podman exec "${CONTAINER_NAME}" \
 
     # ¿El contenedor murió?
     if ! sudo podman ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+
         echo
-        echo "[ERROR] El contenedor CrowdSec se detuvo."
+        echo "[ERROR] CrowdSec se detuvo inesperadamente."
         echo
-        echo "[INFO] Logs del contenedor:"
+
+        echo "[INFO] Logs:"
         echo "--------------------------------------------------"
+
         sudo podman logs "${CONTAINER_NAME}"
+
         echo "--------------------------------------------------"
+
         exit 1
     fi
 
     if [ "$n" -gt 60 ]; then
+
         echo
         echo "[ERROR] Timeout esperando CrowdSec."
         echo
+
         sudo podman logs "${CONTAINER_NAME}"
+
         exit 1
     fi
 
     sleep 2
 done
 
-echo "[OK] CrowdSec inicializado."
+echo "[OK] CrowdSec inicializado correctamente."
 
-# ------------------------------------------------------------
+# ============================================================
 # COLECCIONES
-# ------------------------------------------------------------
+# ============================================================
 
 echo "[INFO] Instalando colecciones..."
 
@@ -161,9 +163,9 @@ sudo podman exec "${CONTAINER_NAME}" \
 sudo podman exec "${CONTAINER_NAME}" \
   cscli collections install crowdsecurity/sshd
 
-# ------------------------------------------------------------
-# BOUNCER
-# ------------------------------------------------------------
+# ============================================================
+# API KEY BOUNCER
+# ============================================================
 
 echo "[INFO] Creando API key del bouncer..."
 
@@ -171,6 +173,12 @@ BOUNCER_KEY=$(
 sudo podman exec "${CONTAINER_NAME}" \
   cscli bouncers add firewall-bouncer -o raw
 )
+
+# ============================================================
+# CONFIG BOUNCER
+# ============================================================
+
+echo "[INFO] Creando configuración del bouncer..."
 
 sudo tee /etc/crowdsec-bouncer.yaml >/dev/null <<EOF
 mode: nftables
@@ -187,9 +195,9 @@ nftables:
     enabled: true
 EOF
 
-# ------------------------------------------------------------
-# SYSTEMD BOUNCER
-# ------------------------------------------------------------
+# ============================================================
+# SYSTEMD SERVICE
+# ============================================================
 
 echo "[INFO] Configurando servicio systemd..."
 
@@ -220,9 +228,9 @@ sudo systemctl daemon-reload
 
 sudo systemctl enable --now crowdsec-firewall-bouncer.service
 
-# ------------------------------------------------------------
+# ============================================================
 # VALIDACIÓN
-# ------------------------------------------------------------
+# ============================================================
 
 echo
 echo "=================================================="
@@ -230,7 +238,7 @@ echo " CrowdSec instalado correctamente"
 echo "=================================================="
 echo
 
-echo "[INFO] Estado del contenedor:"
+echo "[INFO] Contenedor:"
 sudo podman ps
 
 echo
@@ -246,8 +254,8 @@ echo "[INFO] Bouncers:"
 sudo podman exec "${CONTAINER_NAME}" cscli bouncers list
 
 echo
-echo "[INFO] Servicio systemd:"
+echo "[INFO] Estado del servicio:"
 systemctl status crowdsec-firewall-bouncer.service --no-pager
 
 echo
-echo "[OK] Instalación finalizada."
+echo "[OK] Instalación completada."
