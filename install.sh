@@ -104,6 +104,7 @@ for CHOICE in $CHOICES; do
     "5")
       echo "Instalando Crowdsec..."
       "$RUTA_ACTUAL/core/install_crowdsec.sh"
+      "$RUTA_ACTUAL/core/config_systemd_crowdsec.sh"
       ;;
 
     *)
